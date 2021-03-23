@@ -59,6 +59,11 @@
 
                             this.bindingList.Add(message);
 
+                            while (this.bindingList.Count > 1000)
+                            {
+                                this.bindingList.RemoveAt(0);
+                            }
+
                             if (lastVisible == lastIndex)
                             {
                                 this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
