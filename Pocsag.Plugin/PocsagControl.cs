@@ -1,6 +1,7 @@
 ﻿namespace Pocsag.Plugin
 {
     using SDRSharp.Common;
+    using System;
     using System.ComponentModel;
     using System.Windows.Forms;
 
@@ -45,19 +46,26 @@
 
         private void MessageReceived(Pocsag.Message message)
         {
-            //int firstDisplayed = this.dataGridView1.FirstDisplayedScrollingRowIndex;
-            //int displayed = this.dataGridView1.DisplayedRowCount(true);
-            //int lastVisible = (firstDisplayed + displayed) - 1;
-            //int lastIndex = this.dataGridView1.RowCount - 1;
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(
+                    new Action<Pocsag.Message>(
+                        (message) =>
+                        {
+                            int firstDisplayed = this.dataGridView1.FirstDisplayedScrollingRowIndex;
+                            int displayed = this.dataGridView1.DisplayedRowCount(true);
+                            int lastVisible = (firstDisplayed + displayed) - 1;
+                            int lastIndex = this.dataGridView1.RowCount - 1;
 
-            this.bindingList.Add(message);
+                            this.bindingList.Add(message);
 
-            //if (lastVisible == lastIndex)
-            //{
-            //    this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
-            //}
-
-            //this.dataGridView1.FirstDisplayedScrollingRowIndex = this.messages.Count - 1;
+                            if (lastVisible == lastIndex)
+                            {
+                                this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
+                            }
+                        }),
+                    new object[] { message });
+            }
         }
     }
 }

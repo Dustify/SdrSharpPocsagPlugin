@@ -44,6 +44,7 @@
             this.FrameIndex = -1;
             this.CodeWordPosition = -1;
 
+            this.QueueCurrentMessage();
         }
 
         private uint GetBufferValue()
