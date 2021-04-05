@@ -1,1 +1,19 @@
-![POCSAG decoder](https://i.imgur.com/2iYM8Z7.png "POCSAG decoder")
+# Screenshot
+
+![POCSAG decoder](https://i.imgur.com/2iYM8Z7.png)
+
+# Installation
+
+Extract the 'SdrSharpPocsagPlugin' folder in the release zip into the SDR# 'Plugins' directory.
+
+![Plugin directory](https://i.imgur.com/Vyd8x6F.png)
+
+# Build from source
+
+Use Visual Studio 2019, the debug output folder can be put into the SDR# 'Plugins' directory.
+
+# Usage
+
+Provided the plugin has been loaded successfully, there should be an option to display it in the main menu.
+
+![Plugin directory](https://i.imgur.com/9eGnJ9k.png)
