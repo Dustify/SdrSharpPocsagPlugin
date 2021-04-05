@@ -7,33 +7,41 @@
     {
         static void Main(string[] args)
         {
-            var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210322_165253Z_153350000Hz_AF.wav");
-
-            var samples = new List<float>();
-
-            while (true)
+            try
             {
-                var frame = file.ReadNextSampleFrame();
+                var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210322_165253Z_153350000Hz_AF.wav");
 
-                if (frame == null)
+                var samples = new List<float>();
+
+                while (true)
                 {
-                    break;
+                    var frame = file.ReadNextSampleFrame();
+
+                    if (frame == null)
+                    {
+                        break;
+                    }
+
+                    samples.Add(frame[0]);
                 }
 
-                samples.Add(frame[0]);
+                var pocsagManager =
+                    new Manager(
+                        file.WaveFormat.SampleRate,
+                        (Message message) =>
+                        {
+                            Console.WriteLine(message.Payload);
+                        });
+
+                foreach (var sample in samples)
+                {
+                    pocsagManager.Process(sample);
+                }
+
             }
-
-            var pocsagManager =
-                new Manager(
-                    file.WaveFormat.SampleRate,
-                    (Message message) =>
-                    {
-                        Console.WriteLine(message.Payload);
-                    });
-
-            foreach (var sample in samples)
+            catch (Exception exception)
             {
-                pocsagManager.Process(sample);
+                Log.LogException(exception);
             }
 
             Console.WriteLine("Done.");

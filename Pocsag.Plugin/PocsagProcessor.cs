@@ -13,19 +13,33 @@
 
         public PocsagProcessor(double sampleRate, Action<Message> messageReceived)
         {
-            this.SampleRate = sampleRate;
+            try
+            {
+                this.SampleRate = sampleRate;
 
-            this.Manager =
-                new Manager(
-                    (int)this.SampleRate,
-                    messageReceived);
+                this.Manager =
+                    new Manager(
+                        (int)this.SampleRate,
+                        messageReceived);
+            }
+            catch (Exception exception)
+            {
+                Log.LogException(exception);
+            }
         }
 
         public void Process(float* buffer, int length)
         {
-            for (var i = 0; i < length; i++)
+            try
             {
-                this.Manager.Process(buffer[i]);
+                for (var i = 0; i < length; i++)
+                {
+                    this.Manager.Process(buffer[i]);
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.LogException(exception);
             }
         }
     }
