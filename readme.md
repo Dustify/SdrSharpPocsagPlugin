@@ -6,7 +6,7 @@
 
 Extract the 'SdrSharpPocsagPlugin' folder in the release zip into the SDR# 'Plugins' directory.
 
-![Plugin directory](https://i.imgur.com/Vyd8x6F.png)
+![Plugin directory](https://i.imgur.com/5i2CYyo.png)
 
 # Build from source
 
