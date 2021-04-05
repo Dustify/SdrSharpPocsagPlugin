@@ -25,92 +25,113 @@
 
         public Message(int baud)
         {
-            this.Baud = baud;
-            this.RawPayload = new List<bool>();
+            try
+            {
+                this.Baud = baud;
+                this.RawPayload = new List<bool>();
 
-            this.Timestamp = DateTime.Now;
+                this.Timestamp = DateTime.Now;
+            }
+            catch (Exception exception)
+            {
+                Log.LogException(exception);
+            }
         }
 
         public void AppendCodeWord(bool[] codeWord, int frameIndex)
         {
-            this.HasData = true;
-
-            var data = new bool[20];
-
-            var bch = new bool[10];
-
-            Array.Copy(codeWord, 1, data, 0, 20);
-            Array.Copy(codeWord, 21, bch, 0, 10);
-
-            var parity = codeWord[31];
-
-            if (codeWord[0] == false)
+            try
             {
-                // address
-                this.FrameIndex = frameIndex;
+                this.HasData = true;
 
-                for (var i = 0; i < 18; i++)
+                var data = new bool[20];
+
+                var bch = new bool[10];
+
+                Array.Copy(codeWord, 1, data, 0, 20);
+                Array.Copy(codeWord, 21, bch, 0, 10);
+
+                var parity = codeWord[31];
+
+                if (codeWord[0] == false)
                 {
-                    var position = 17 - i;
+                    // address
+                    this.FrameIndex = frameIndex;
 
-                    if (data[i])
+                    for (var i = 0; i < 18; i++)
                     {
-                        this.ChannelAccessProtocolCode += (uint)(1 << position);
+                        var position = 17 - i;
+
+                        if (data[i])
+                        {
+                            this.ChannelAccessProtocolCode += (uint)(1 << position);
+                        }
+                    }
+
+                    for (var i = 18; i < 20; i++)
+                    {
+                        var position = 1 - (i - 18);
+
+                        if (data[i])
+                        {
+                            this.Function += (byte)(1 << position);
+                        }
                     }
                 }
-
-                for (var i = 18; i < 20; i++)
+                else
                 {
-                    var position = 1 - (i - 18);
-
-                    if (data[i])
-                    {
-                        this.Function += (byte)(1 << position);
-                    }
+                    // message
+                    this.RawPayload.AddRange(data);
                 }
             }
-            else
+            catch (Exception exception)
             {
-                // message
-                this.RawPayload.AddRange(data);
+                Log.LogException(exception);
             }
         }
 
         public void ProcessPayload()
         {
-            var result = string.Empty;
-
-            //if (this.Function == 0)
-            //{
-            //    // numeric
-            //}
-            //else
-            //{
-            var byteCount = (int)Math.Floor(this.RawPayload.Count / 7.0);
-
-            for (var i = 0; i < byteCount; i++)
+            try
             {
-                var position = i * 7;
+                var result = string.Empty;
 
-                var currentBits =
-                    this.RawPayload.
-                    Skip(position).
-                    Take(7);
+                //if (this.Function == 0)
+                //{
+                //    // numeric
+                //}
+                //else
+                //{
+                var byteCount = (int)Math.Floor(this.RawPayload.Count / 7.0);
 
-                var bitArray = new BitArray(currentBits.ToArray());
-
-                var byteArray = new byte[1];
-
-                bitArray.CopyTo(byteArray, 0);
-
-                if (byteArray[0] != 0)
+                for (var i = 0; i < byteCount; i++)
                 {
-                    result += (char)byteArray[0];
-                }
-            }
-            //}
+                    var position = i * 7;
 
-            this.Payload = result;
+                    var currentBits =
+                        this.RawPayload.
+                        Skip(position).
+                        Take(7);
+
+                    var bitArray = new BitArray(currentBits.ToArray());
+
+                    var byteArray = new byte[1];
+
+                    bitArray.CopyTo(byteArray, 0);
+
+                    if (byteArray[0] != 0)
+                    {
+                        result += (char)byteArray[0];
+                    }
+                }
+                //}
+
+                this.Payload = result;
+            }
+            catch (Exception exception)
+            {
+                Log.LogException(exception);
+            }
         }
     }
 }

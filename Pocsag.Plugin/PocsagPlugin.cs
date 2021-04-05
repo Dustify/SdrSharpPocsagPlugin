@@ -1,6 +1,7 @@
 ﻿namespace Pocsag.Plugin
 {
     using SDRSharp.Common;
+    using System;
     using System.Windows.Forms;
 
     public class PocsagPlugin : ISharpPlugin
@@ -12,12 +13,21 @@
         {
             get
             {
-                if (this.gui == null)
+                try
                 {
-                    this.gui = new PocsagControl(this.control);
+                    if (this.gui == null)
+                    {
+                        this.gui = new PocsagControl(this.control);
+                    }
+
+                    return this.gui;
+                }
+                catch (Exception exception)
+                {
+                    Log.LogException(exception);
                 }
 
-                return this.gui;
+                return null;
             }
         }
 
@@ -25,12 +35,18 @@
 
         public void Close()
         {
-
         }
 
         public void Initialize(ISharpControl control)
         {
-            this.control = control;
+            try
+            {
+                this.control = control;
+            }
+            catch (Exception exception)
+            {
+                Log.LogException(exception);
+            }
         }
     }
 }
