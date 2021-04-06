@@ -23,6 +23,10 @@
 
         public string Payload { get; private set; }
 
+        public bool HasParityError { get; private set; }
+
+        public string HasParityErrorText => this.HasParityError ? "Yes" : "No";
+
         public Message(int baud)
         {
             try
@@ -52,6 +56,27 @@
                 Array.Copy(codeWord, 21, bch, 0, 10);
 
                 var parity = codeWord[31];
+
+                // BCH / parity stuff here
+
+                var trueCount = codeWord.Take(31).Count(x => x == true);
+
+                if (trueCount % 2 == 0)
+                {
+                    // parity should be zero (false)
+                    if (parity != false)
+                    {
+                        this.HasParityError = true;
+                    }
+                }
+                else
+                {
+                    // parity should be one (true)
+                    if (parity != true)
+                    {
+                        this.HasParityError = true;
+                    }
+                }
 
                 if (codeWord[0] == false)
                 {
@@ -96,12 +121,6 @@
             {
                 var result = string.Empty;
 
-                //if (this.Function == 0)
-                //{
-                //    // numeric
-                //}
-                //else
-                //{
                 var byteCount = (int)Math.Floor(this.RawPayload.Count / 7.0);
 
                 for (var i = 0; i < byteCount; i++)
@@ -124,7 +143,6 @@
                         result += (char)byteArray[0];
                     }
                 }
-                //}
 
                 this.Payload = result;
             }
