@@ -57,8 +57,10 @@
 
                 var parity = codeWord[31];
 
-                // BCH / parity stuff here
+                // BCH / error correction
+                // too hard for the moment, will probably need some help!
 
+                // start parity check
                 var trueCount = codeWord.Take(31).Count(x => x == true);
 
                 if (trueCount % 2 == 0)
@@ -77,6 +79,8 @@
                         this.HasParityError = true;
                     }
                 }
+
+                // end parity check
 
                 if (codeWord[0] == false)
                 {
