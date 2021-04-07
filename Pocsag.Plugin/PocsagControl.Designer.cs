@@ -35,6 +35,7 @@ namespace Pocsag.Plugin
             this.ChannelAccessProtocolCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Function = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Baud = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HasParityErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -52,6 +53,7 @@ namespace Pocsag.Plugin
             this.ChannelAccessProtocolCode,
             this.Function,
             this.Baud,
+            this.HasParityErrorText,
             this.Payload});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -101,6 +103,14 @@ namespace Pocsag.Plugin
             this.Baud.ReadOnly = true;
             this.Baud.Width = 52;
             // 
+            // HasParityErrorText
+            // 
+            this.HasParityErrorText.DataPropertyName = "HasParityErrorText";
+            this.HasParityErrorText.HeaderText = "Parity Error";
+            this.HasParityErrorText.Name = "HasParityErrorText";
+            this.HasParityErrorText.ReadOnly = true;
+            this.HasParityErrorText.Width = 90;
+            // 
             // Payload
             // 
             this.Payload.DataPropertyName = "Payload";
@@ -128,6 +138,7 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.DataGridViewTextBoxColumn ChannelAccessProtocolCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn Function;
         private System.Windows.Forms.DataGridViewTextBoxColumn Baud;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HasParityErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
     }
 }
