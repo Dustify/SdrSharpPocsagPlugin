@@ -27,6 +27,8 @@
 
         public string HasParityErrorText => this.HasParityError ? "Yes" : "No";
 
+        public bool IsValid => true;
+
         public Message(int baud)
         {
             try

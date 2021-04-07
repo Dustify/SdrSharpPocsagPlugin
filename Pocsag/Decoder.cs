@@ -82,7 +82,9 @@
         {
             try
             {
-                if (this.CurrentMessage != null && this.CurrentMessage.HasData)
+                if (this.CurrentMessage != null && 
+                    this.CurrentMessage.HasData && 
+                    this.CurrentMessage.IsValid)
                 {
                     this.CurrentMessage.ProcessPayload();
                     this.MessageReceived(this.CurrentMessage);
