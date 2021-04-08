@@ -34,7 +34,7 @@
 
         public string HasBchErrorText => this.HasBchError ? "Yes" : "No";
 
-        public bool IsValid => true;
+        public bool IsValid => !this.HasBchError && !this.HasParityError;
 
         public Message(int baud)
         {
@@ -98,7 +98,7 @@
                         {
                             // clear bit
                             remainder &= ~((uint)1 << position);
-                        }   
+                        }
                     }
                 }
             }
