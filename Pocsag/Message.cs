@@ -1,10 +1,9 @@
 ﻿namespace Pocsag
 {
     using System;
-    using System.Linq;
-    using System.Collections.Generic;
     using System.Collections;
-    using System.Text;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class Message
     {
@@ -35,6 +34,8 @@
         public string HasBchErrorText => this.HasBchError ? "Yes" : "No";
 
         public bool IsValid => !this.HasBchError && !this.HasParityError;
+
+        public string Hash { get; private set; }
 
         public Message(int baud)
         {
@@ -215,6 +216,26 @@
                 }
 
                 this.Payload = result;
+
+                var textToHash = this.Payload;
+
+                // skip first 9 characters, typically contains time / date + another number which will mess up duplicate detection
+
+                if (textToHash.Length > 9)
+                {
+                    textToHash = textToHash.Substring(8);
+                }
+
+                var bytesToHash = System.Text.Encoding.ASCII.GetBytes(textToHash);
+
+                var sha256 = new System.Security.Cryptography.SHA256Managed();
+
+                var hashBytes = sha256.ComputeHash(bytesToHash);
+
+                sha256.Dispose();
+                sha256 = null;
+
+                this.Hash = BitConverter.ToString(hashBytes).Replace("-", "");
             }
             catch (Exception exception)
             {
