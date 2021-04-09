@@ -4,6 +4,7 @@
     using System;
     using System.ComponentModel;
     using System.Windows.Forms;
+    using System.Linq;
 
     public partial class PocsagControl : UserControl
     {
@@ -52,6 +53,12 @@
                     new Action<Pocsag.Message>(
                         (message) =>
                         {
+                            // skip duplicate messages
+                            if (this.bindingList.Any(x => x.Hash == message.Hash))
+                            {
+                                return;
+                            }
+
                             int firstDisplayed = this.dataGridView1.FirstDisplayedScrollingRowIndex;
                             int displayed = this.dataGridView1.DisplayedRowCount(true);
                             int lastVisible = (firstDisplayed + displayed) - 1;
