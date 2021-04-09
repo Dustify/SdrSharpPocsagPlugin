@@ -35,6 +35,7 @@ namespace Pocsag.Plugin
             this.ChannelAccessProtocolCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Function = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Baud = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HasBchErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasParityErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -53,6 +54,7 @@ namespace Pocsag.Plugin
             this.ChannelAccessProtocolCode,
             this.Function,
             this.Baud,
+            this.HasBchErrorText,
             this.HasParityErrorText,
             this.Payload});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -103,6 +105,14 @@ namespace Pocsag.Plugin
             this.Baud.ReadOnly = true;
             this.Baud.Width = 52;
             // 
+            // HasBchErrorText
+            // 
+            this.HasBchErrorText.DataPropertyName = "HasBchErrorText";
+            this.HasBchErrorText.HeaderText = "BCH Error";
+            this.HasBchErrorText.Name = "HasBchErrorText";
+            this.HasBchErrorText.ReadOnly = true;
+            this.HasBchErrorText.Width = 84;
+            // 
             // HasParityErrorText
             // 
             this.HasParityErrorText.DataPropertyName = "HasParityErrorText";
@@ -138,6 +148,7 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.DataGridViewTextBoxColumn ChannelAccessProtocolCode;
         private System.Windows.Forms.DataGridViewTextBoxColumn Function;
         private System.Windows.Forms.DataGridViewTextBoxColumn Baud;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HasBchErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasParityErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
     }

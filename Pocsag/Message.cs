@@ -4,9 +4,12 @@
     using System.Linq;
     using System.Collections.Generic;
     using System.Collections;
+    using System.Text;
 
     public class Message
     {
+        public const uint Generator = 1897;
+
         public DateTime Timestamp { get; }
 
         public bool HasData { get; private set; }
@@ -27,6 +30,12 @@
 
         public string HasParityErrorText => this.HasParityError ? "Yes" : "No";
 
+        public bool HasBchError { get; private set; }
+
+        public string HasBchErrorText => this.HasBchError ? "Yes" : "No";
+
+        public bool IsValid => !this.HasBchError && !this.HasParityError;
+
         public Message(int baud)
         {
             try
@@ -40,6 +49,61 @@
             {
                 Log.LogException(exception);
             }
+        }
+
+        public bool IsBitPresent(uint source, int index)
+        {
+            return (source & (1 << index)) > 0;
+        }
+
+        public bool CheckBchError(bool[] codeWord)
+        {
+            // BCH / error correction
+
+            // converts bool array to uint
+            uint codeWordAsUInt = 0;
+
+            for (var i = 0; i < 31; i++)
+            {
+                if (codeWord[i])
+                {
+                    codeWordAsUInt += (uint)(1 << 30 - i);
+                }
+            }
+
+            // modulo 2 division
+
+            uint remainder = codeWordAsUInt;
+
+            for (var i = 30; i >= 0; i--)
+            {
+                // if bit is set then do xor
+                if (this.IsBitPresent(remainder, i))
+                {
+                    for (var x = 0; x < 11; x++)
+                    {
+                        var position = i - x;
+
+                        var currentValue = this.IsBitPresent(remainder, position);
+                        var generatorValue = this.IsBitPresent(Generator, 10 - x);
+
+                        var xorResult = currentValue ^ generatorValue;
+
+                        if (xorResult)
+                        {
+                            // set bit
+                            remainder |= ((uint)1 << position);
+                        }
+                        else
+                        {
+                            // clear bit
+                            remainder &= ~((uint)1 << position);
+                        }
+                    }
+                }
+            }
+
+            return remainder > 0;
         }
 
         public void AppendCodeWord(bool[] codeWord, int frameIndex)
@@ -57,8 +121,10 @@
 
                 var parity = codeWord[31];
 
-                // BCH / error correction
-                // too hard for the moment, will probably need some help!
+                if (this.CheckBchError(codeWord))
+                {
+                    this.HasBchError = true;
+                }
 
                 // start parity check
                 var trueCount = codeWord.Take(31).Count(x => x == true);

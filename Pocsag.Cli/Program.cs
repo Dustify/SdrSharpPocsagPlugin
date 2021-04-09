@@ -10,6 +10,7 @@
             try
             {
                 var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210322_165253Z_153350000Hz_AF.wav");
+                //var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210407_174912Z_153350000Hz_AF.wav");
 
                 var samples = new List<float>();
 
