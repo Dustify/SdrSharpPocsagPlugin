@@ -19,7 +19,11 @@
 
         public List<bool> Buffer { get; }
 
+        public int BatchIndex { get; private set; }
+
         public int FrameIndex { get; private set; }
+
+        public int CodeWordInFrameIndex { get; private set; }
 
         public int CodeWordPosition { get; private set; }
 
@@ -43,7 +47,9 @@
                     this.Buffer.Add(false);
                 }
 
+                this.BatchIndex = -1;
                 this.FrameIndex = -1;
+                this.CodeWordInFrameIndex = -1;
                 this.CodeWordPosition = -1;
 
                 this.QueueCurrentMessage();
@@ -82,8 +88,8 @@
         {
             try
             {
-                if (this.CurrentMessage != null && 
-                    this.CurrentMessage.HasData && 
+                if (this.CurrentMessage != null &&
+                    this.CurrentMessage.HasData &&
                     this.CurrentMessage.IsValid)
                 {
                     this.CurrentMessage.ProcessPayload();
@@ -125,29 +131,32 @@
                         var bufferValue = this.GetBufferValue();
 
                         // preamble
-                        //if (bufferValue == 0b10101010101010101010101010101010 ||
-                        //    bufferValue == 0b01010101010101010101010101010101)
-                        //{
-                        //    this.builder.Append(",PREAMBLE");
-                        //}
+                        if (bufferValue == 0b10101010101010101010101010101010 ||
+                            bufferValue == 0b01010101010101010101010101010101)
+                        {
+                            // reset these until we see batch sync 
+                            this.BatchIndex = -1;
+                            this.FrameIndex = -1;
+                            this.CodeWordInFrameIndex = -1;
+                            this.CodeWordPosition = -1;
+                        }
 
-                        if (this.FrameIndex > -1 && this.CodeWordPosition > -1)
+                        if (this.BatchIndex > -1 &&
+                            this.FrameIndex > -1 &&
+                            this.CodeWordInFrameIndex > -1 &&
+                            this.CodeWordPosition > -1)
                         {
                             this.CodeWordPosition++;
 
                             if (this.CodeWordPosition > 31)
                             {
-                                //this.builder.Append($",ENDCODEWORD{this.FrameIndex}");
-
                                 this.CodeWordPosition = 0;
-                                this.FrameIndex++;
+                                this.CodeWordInFrameIndex++;
 
                                 // idle
                                 if (bufferValue == 0b01111010100010011100000110010111)
                                 {
-                                    //this.builder.Append($",IDLE");
-
-                                    this.QueueCurrentMessage();
+                                                                        this.QueueCurrentMessage();
                                 }
                                 else
                                 {
@@ -161,27 +170,31 @@
                                         this.Buffer.ToArray(),
                                         this.FrameIndex);
                                 }
+
+                                if (this.CodeWordInFrameIndex > 1)
+                                {
+                                    this.CodeWordInFrameIndex = 0;
+                                    this.FrameIndex++;
+                                }
                             }
 
-                            if (this.FrameIndex > 15)
+                            // doing this allows us to wait for batch sync below
+                            if (this.FrameIndex > 7)
                             {
                                 this.FrameIndex = -1;
+                                this.CodeWordInFrameIndex = -1;
                                 this.CodeWordPosition = -1;
-
-                                //this.builder.Append(",ENDBATCH");
                             }
                         }
 
-                        // framesync
+                        // batch sync
                         if (bufferValue == 0b01111100110100100001010111011000)
                         {
-                            //this.builder.Append(",FRAMESYNC");
-
+                            this.BatchIndex++;
                             this.FrameIndex = 0;
                             this.CodeWordPosition = 0;
+                            this.CodeWordInFrameIndex = 0;
                         }
-
-                        //this.builder.AppendLine();
                     }
 
                     this.SamplesForCurrentValue = 0;
