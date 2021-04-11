@@ -154,9 +154,11 @@
                     // address
                     this.FrameIndex = frameIndex;
 
+                    this.ChannelAccessProtocolCode += (uint)this.FrameIndex;
+
                     for (var i = 0; i < 18; i++)
                     {
-                        var position = 17 - i;
+                        var position = 20 - i;
 
                         if (data[i])
                         {
