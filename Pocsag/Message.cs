@@ -156,7 +156,7 @@
 
                     this.ChannelAccessProtocolCode += (uint)this.FrameIndex;
 
-                    for (var i = 0; i < 18; i++)
+                    for (var i = 0; i < 19; i++)
                     {
                         var position = 20 - i;
 
