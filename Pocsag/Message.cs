@@ -166,9 +166,6 @@
                         }
                     }
 
-                    var x = BitConverter.GetBytes(this.ChannelAccessProtocolCode);
-                    var y = new BitArray(x);
-
                     for (var i = 18; i < 20; i++)
                     {
                         var position = 1 - (i - 18);
