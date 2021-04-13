@@ -69,7 +69,7 @@ namespace Pocsag.Plugin
             // 
             // Timestamp
             // 
-            this.Timestamp.DataPropertyName = "Timestamp";
+            this.Timestamp.DataPropertyName = "TimestampText";
             this.Timestamp.HeaderText = "Timestamp";
             this.Timestamp.Name = "Timestamp";
             this.Timestamp.ReadOnly = true;

@@ -18,6 +18,8 @@
 
         public DateTime Timestamp { get; }
 
+        public string TimestampText => $"{this.Timestamp.ToShortDateString()} {this.Timestamp.ToLongTimeString()}";
+
         public bool HasData { get; private set; }
 
         public int FrameIndex { get; private set; }
