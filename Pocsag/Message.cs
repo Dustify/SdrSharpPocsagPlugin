@@ -5,6 +5,13 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    public enum MessageType
+    {
+        AlphaNumeric,
+        Numeric,
+        Tone
+    }
+
     public class Message
     {
         public const uint Generator = 1897;
@@ -36,6 +43,47 @@
         public bool IsValid => !this.HasBchError && !this.HasParityError;
 
         public string Hash { get; private set; }
+
+        public MessageType Type { get; private set; }
+
+        public string TypeText
+        {
+            get
+            {
+                switch (this.Type)
+                {
+                    case MessageType.AlphaNumeric:
+                        return "Alpha";
+                    case MessageType.Numeric:
+                        return "Numeric";
+                    case MessageType.Tone:
+                        return "Tone";
+                }
+
+                return string.Empty;
+            }
+        }
+
+        public static readonly Dictionary<byte, char> NumericMapping =
+            new Dictionary<byte, char>()
+            {
+                { 0, '0' },
+                { 1, '1' },
+                { 2, '2' },
+                { 3, '3' },
+                { 4, '4' },
+                { 5, '5' },
+                { 6, '6' },
+                { 7, '7' },
+                { 8, '8' },
+                { 9, '9' },
+                { 10, '?' },
+                { 11, 'U' },
+                { 12, ' ' },
+                { 13, '-' },
+                { 14, ')' },
+                { 15, '(' }
+            };
 
         public Message(int baud)
         {
@@ -218,6 +266,41 @@
                 }
 
                 this.Payload = result;
+
+                var numericResult = string.Empty;
+
+                var numericByteCount = (int)Math.Floor(this.RawPayload.Count / 4.0);
+
+                for (var i = 0; i < numericByteCount; i++)
+                {
+                    var position = i * 4;
+
+                    var currentBits =
+                       this.RawPayload.
+                       Skip(position).
+                       Take(4);
+
+                    var bitArray = new BitArray(currentBits.ToArray());
+
+                    var byteArray = new byte[1];
+
+                    bitArray.CopyTo(byteArray, 0);
+
+                    numericResult += NumericMapping[byteArray[0]];
+                }
+
+                this.Type = MessageType.AlphaNumeric;
+
+                if (numericResult.Length == 0)
+                {
+                    this.Payload = "";
+                    this.Type = MessageType.Tone;
+                }
+                else if (numericResult.Length < 16)
+                {
+                    this.Payload = $"{numericResult} (ALPHA: {this.Payload})";
+                    this.Type = MessageType.Numeric;
+                }
 
                 var textToHash = this.Payload;
 

@@ -37,6 +37,7 @@ namespace Pocsag.Plugin
             this.Baud = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasBchErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasParityErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -56,6 +57,7 @@ namespace Pocsag.Plugin
             this.Baud,
             this.HasBchErrorText,
             this.HasParityErrorText,
+            this.Type,
             this.Payload});
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -121,6 +123,14 @@ namespace Pocsag.Plugin
             this.HasParityErrorText.ReadOnly = true;
             this.HasParityErrorText.Width = 90;
             // 
+            // Type
+            // 
+            this.Type.DataPropertyName = "TypeText";
+            this.Type.HeaderText = "Type";
+            this.Type.Name = "Type";
+            this.Type.ReadOnly = true;
+            this.Type.Width = 56;
+            // 
             // Payload
             // 
             this.Payload.DataPropertyName = "Payload";
@@ -150,6 +160,7 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.DataGridViewTextBoxColumn Baud;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasBchErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasParityErrorText;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
     }
 }
