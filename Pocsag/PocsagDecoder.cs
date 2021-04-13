@@ -12,9 +12,9 @@
 
         public int CodeWordPosition { get; private set; }
 
-        public Message CurrentMessage { get; private set; }
+        public PocsagMessage CurrentMessage { get; private set; }
 
-        public PocsagDecoder(int baud, int sampleRate, Action<Message> messageReceived) :
+        public PocsagDecoder(uint baud, int sampleRate, Action<PocsagMessage> messageReceived) :
             base(baud, sampleRate, messageReceived)
         {
             try
@@ -48,7 +48,7 @@
                     this.MessageReceived(this.CurrentMessage);
                 }
 
-                this.CurrentMessage = new Message(this.Baud);
+                this.CurrentMessage = new PocsagMessage(this.Bps);
             }
             catch (Exception exception)
             {

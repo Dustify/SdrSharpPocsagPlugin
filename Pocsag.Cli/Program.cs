@@ -29,7 +29,7 @@
                 var pocsagManager =
                     new Manager(
                         file.WaveFormat.SampleRate,
-                        (Message message) =>
+                        ( PocsagMessage message) =>
                         {
                             Console.WriteLine(message.Payload);
                         });

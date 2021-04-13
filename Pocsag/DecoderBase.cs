@@ -5,9 +5,9 @@
 
     public abstract class DecoderBase
     {
-        public Action<Message> MessageReceived { get; }
+        public Action<PocsagMessage> MessageReceived { get; }
 
-        public int Baud { get; }
+        public uint Bps { get; }
 
         public int SampleRate { get; }
 
@@ -19,9 +19,9 @@
 
         public int SamplesForCurrentValue { get; private set; }
 
-        public DecoderBase(int baud, int sampleRate, Action<Message> messageReceived)
+        public DecoderBase(uint baud, int sampleRate, Action<PocsagMessage> messageReceived)
         {
-            this.Baud = baud;
+            this.Bps = baud;
             this.SampleRate = sampleRate;
 
             this.MessageReceived = messageReceived;

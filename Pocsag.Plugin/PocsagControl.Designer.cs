@@ -32,16 +32,16 @@ namespace Pocsag.Plugin
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
             this.checkBoxHideBad = new System.Windows.Forms.CheckBox();
+            this.buttonClear = new System.Windows.Forms.Button();
             this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FrameIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ChannelAccessProtocolCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Function = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Baud = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Bps = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasBchErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasParityErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.buttonClear = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,9 +58,9 @@ namespace Pocsag.Plugin
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Timestamp,
             this.FrameIndex,
-            this.ChannelAccessProtocolCode,
+            this.Address,
             this.Function,
-            this.Baud,
+            this.Bps,
             this.HasBchErrorText,
             this.HasParityErrorText,
             this.Type,
@@ -92,6 +92,16 @@ namespace Pocsag.Plugin
             this.checkBoxHideBad.Text = "Hide bad decodes";
             this.checkBoxHideBad.UseVisualStyleBackColor = true;
             // 
+            // buttonClear
+            // 
+            this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClear.Location = new System.Drawing.Point(616, 5);
+            this.buttonClear.Name = "buttonClear";
+            this.buttonClear.Size = new System.Drawing.Size(75, 23);
+            this.buttonClear.TabIndex = 3;
+            this.buttonClear.Text = "Clear";
+            this.buttonClear.UseVisualStyleBackColor = true;
+            // 
             // Timestamp
             // 
             this.Timestamp.DataPropertyName = "TimestampText";
@@ -108,13 +118,13 @@ namespace Pocsag.Plugin
             this.FrameIndex.ReadOnly = true;
             this.FrameIndex.Width = 97;
             // 
-            // ChannelAccessProtocolCode
+            // Address
             // 
-            this.ChannelAccessProtocolCode.DataPropertyName = "ChannelAccessProtocolCode";
-            this.ChannelAccessProtocolCode.HeaderText = "CAP Code";
-            this.ChannelAccessProtocolCode.Name = "ChannelAccessProtocolCode";
-            this.ChannelAccessProtocolCode.ReadOnly = true;
-            this.ChannelAccessProtocolCode.Width = 86;
+            this.Address.DataPropertyName = "Address";
+            this.Address.HeaderText = "Address";
+            this.Address.Name = "Address";
+            this.Address.ReadOnly = true;
+            this.Address.Width = 74;
             // 
             // Function
             // 
@@ -124,13 +134,13 @@ namespace Pocsag.Plugin
             this.Function.ReadOnly = true;
             this.Function.Width = 79;
             // 
-            // Baud
+            // Bps
             // 
-            this.Baud.DataPropertyName = "Baud";
-            this.Baud.HeaderText = "BPS";
-            this.Baud.Name = "Baud";
-            this.Baud.ReadOnly = true;
-            this.Baud.Width = 52;
+            this.Bps.DataPropertyName = "Bps";
+            this.Bps.HeaderText = "BPS";
+            this.Bps.Name = "Bps";
+            this.Bps.ReadOnly = true;
+            this.Bps.Width = 52;
             // 
             // HasBchErrorText
             // 
@@ -164,16 +174,6 @@ namespace Pocsag.Plugin
             this.Payload.ReadOnly = true;
             this.Payload.Width = 74;
             // 
-            // buttonClear
-            // 
-            this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClear.Location = new System.Drawing.Point(616, 5);
-            this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(75, 23);
-            this.buttonClear.TabIndex = 3;
-            this.buttonClear.Text = "Clear";
-            this.buttonClear.UseVisualStyleBackColor = true;
-            // 
             // PocsagControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -194,15 +194,15 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.CheckBox checkBoxDeDuplicate;
         private System.Windows.Forms.CheckBox checkBoxHideBad;
+        private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn FrameIndex;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ChannelAccessProtocolCode;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Address;
         private System.Windows.Forms.DataGridViewTextBoxColumn Function;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Baud;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Bps;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasBchErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasParityErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
-        private System.Windows.Forms.Button buttonClear;
     }
 }

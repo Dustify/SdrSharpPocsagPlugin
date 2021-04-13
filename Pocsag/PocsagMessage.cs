@@ -5,34 +5,11 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public enum MessageType
-    {
-        AlphaNumeric,
-        Numeric,
-        Tone
-    }
 
-    public class Message
+
+    public class PocsagMessage : MessageBase
     {
         public const uint Generator = 1897;
-
-        public DateTime Timestamp { get; }
-
-        public string TimestampText => $"{this.Timestamp.ToShortDateString()} {this.Timestamp.ToLongTimeString()}";
-
-        public bool HasData { get; private set; }
-
-        public int FrameIndex { get; private set; }
-
-        public UInt32 ChannelAccessProtocolCode { get; private set; }
-
-        public byte Function { get; private set; }
-
-        public int Baud { get; }
-
-        public List<bool> RawPayload { get; private set; }
-
-        public string Payload { get; private set; }
 
         public bool HasParityError { get; private set; }
 
@@ -43,28 +20,6 @@
         public string HasBchErrorText => this.HasBchError ? "Yes" : "No";
 
         public bool IsValid => !this.HasBchError && !this.HasParityError;
-
-        public string Hash { get; private set; }
-
-        public MessageType Type { get; private set; }
-
-        public string TypeText
-        {
-            get
-            {
-                switch (this.Type)
-                {
-                    case MessageType.AlphaNumeric:
-                        return "Alpha";
-                    case MessageType.Numeric:
-                        return "Numeric";
-                    case MessageType.Tone:
-                        return "Tone";
-                }
-
-                return string.Empty;
-            }
-        }
 
         public static readonly Dictionary<byte, char> NumericMapping =
             new Dictionary<byte, char>()
@@ -87,19 +42,9 @@
                 { 15, '(' }
             };
 
-        public Message(int baud)
+        public PocsagMessage(uint bps) : base(bps)
         {
-            try
-            {
-                this.Baud = baud;
-                this.RawPayload = new List<bool>();
 
-                this.Timestamp = DateTime.Now;
-            }
-            catch (Exception exception)
-            {
-                Log.LogException(exception);
-            }
         }
 
         public bool IsBitPresent(uint source, int index)
@@ -204,7 +149,7 @@
                     // address
                     this.FrameIndex = frameIndex;
 
-                    this.ChannelAccessProtocolCode += (uint)this.FrameIndex;
+                    this.Address += (uint)this.FrameIndex;
 
                     for (var i = 0; i < 18; i++)
                     {
@@ -212,7 +157,7 @@
 
                         if (data[i])
                         {
-                            this.ChannelAccessProtocolCode += (uint)(1 << position);
+                            this.Address += (uint)(1 << position);
                         }
                     }
 
@@ -304,25 +249,7 @@
                     this.Type = MessageType.Numeric;
                 }
 
-                var textToHash = this.Payload;
-
-                // skip first 9 characters, typically contains time / date + another number which will mess up duplicate detection
-
-                if (textToHash.Length > 9)
-                {
-                    textToHash = textToHash.Substring(8);
-                }
-
-                var bytesToHash = System.Text.Encoding.ASCII.GetBytes(textToHash);
-
-                var sha256 = new System.Security.Cryptography.SHA256Managed();
-
-                var hashBytes = sha256.ComputeHash(bytesToHash);
-
-                sha256.Dispose();
-                sha256 = null;
-
-                this.Hash = BitConverter.ToString(hashBytes).Replace("-", "");
+                this.UpdateHash();
             }
             catch (Exception exception)
             {

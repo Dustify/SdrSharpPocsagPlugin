@@ -12,7 +12,7 @@
 
         public PocsagDecoder Pocsag2400 { get; }
 
-        public Manager(int sampleRate, Action<Message> messageReceived)
+        public Manager(int sampleRate, Action<PocsagMessage> messageReceived)
         {
             try
             {
