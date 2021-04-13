@@ -89,8 +89,7 @@
             try
             {
                 if (this.CurrentMessage != null &&
-                    this.CurrentMessage.HasData &&
-                    this.CurrentMessage.IsValid)
+                    this.CurrentMessage.HasData)
                 {
                     this.CurrentMessage.ProcessPayload();
                     this.MessageReceived(this.CurrentMessage);
@@ -156,7 +155,7 @@
                                 // idle
                                 if (bufferValue == 0b01111010100010011100000110010111)
                                 {
-                                                                        this.QueueCurrentMessage();
+                                    this.QueueCurrentMessage();
                                 }
                                 else
                                 {

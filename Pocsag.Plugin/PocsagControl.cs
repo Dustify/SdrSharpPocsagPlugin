@@ -15,6 +15,10 @@
         private BindingSource bindingSource;
         private BindingList<Pocsag.Message> bindingList;
 
+        private bool deDuplicate = true;
+
+        private bool hideBad = true;
+
         public PocsagControl(ISharpControl control)
         {
             InitializeComponent();
@@ -43,6 +47,27 @@
             this.dataGridView1.AutoGenerateColumns = false;
 
             this.dataGridView1.DataSource = this.bindingSource;
+
+            this.checkBoxDeDuplicate.Checked = this.deDuplicate;
+            this.checkBoxHideBad.Checked = this.hideBad;
+
+            this.checkBoxDeDuplicate.Click +=
+                (object sender, EventArgs e) =>
+                {
+                    this.deDuplicate = this.checkBoxDeDuplicate.Checked;
+                };
+
+            this.checkBoxHideBad.Click +=
+                (object sender, EventArgs e) =>
+                {
+                    this.hideBad = this.checkBoxHideBad.Checked;
+                };
+
+            this.buttonClear.Click +=
+                (object sender, EventArgs e) =>
+                {
+                    this.bindingList.Clear();
+                };
         }
 
         private void MessageReceived(Pocsag.Message message)
@@ -54,8 +79,14 @@
                         (message) =>
                         {
                             // skip duplicate messages
-                            if (message.Payload != string.Empty &&
-                                this.bindingList.Any(x => x.Hash == message.Hash))
+                            if (this.deDuplicate &&
+                                    message.Payload != string.Empty &&
+                                    this.bindingList.Any(x => x.Hash == message.Hash))
+                            {
+                                return;
+                            }
+
+                            if (this.hideBad && !message.IsValid)
                             {
                                 return;
                             }
