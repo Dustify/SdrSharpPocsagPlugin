@@ -54,7 +54,8 @@
                         (message) =>
                         {
                             // skip duplicate messages
-                            if (this.bindingList.Any(x => x.Hash == message.Hash))
+                            if (message.Payload != string.Empty &&
+                                this.bindingList.Any(x => x.Hash == message.Hash))
                             {
                                 return;
                             }
