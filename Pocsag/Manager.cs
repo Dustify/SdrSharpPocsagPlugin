@@ -6,11 +6,11 @@
     {
         public int SampleRate { get; }
 
-        public PocsagDecoder Decoder512 { get; }
+        public PocsagDecoder Pocsag512 { get; }
 
-        public PocsagDecoder Decoder1200 { get; }
+        public PocsagDecoder Pocsag1200 { get; }
 
-        public PocsagDecoder Decoder2400 { get; }
+        public PocsagDecoder Pocsag2400 { get; }
 
         public Manager(int sampleRate, Action<Message> messageReceived)
         {
@@ -18,11 +18,11 @@
             {
                 this.SampleRate = sampleRate;
 
-                this.Decoder512 = new PocsagDecoder(512, this.SampleRate, messageReceived);
+                this.Pocsag512 = new PocsagDecoder(512, this.SampleRate, messageReceived);
 
-                this.Decoder1200 = new PocsagDecoder(1200, this.SampleRate, messageReceived);
+                this.Pocsag1200 = new PocsagDecoder(1200, this.SampleRate, messageReceived);
 
-                this.Decoder2400 = new PocsagDecoder(2400, this.SampleRate, messageReceived);
+                this.Pocsag2400 = new PocsagDecoder(2400, this.SampleRate, messageReceived);
             }
             catch (Exception exception)
             {
@@ -34,9 +34,9 @@
         {
             try
             {
-                this.Decoder512.Process(value);
-                this.Decoder1200.Process(value);
-                this.Decoder2400.Process(value);
+                this.Pocsag512.Process(value);
+                this.Pocsag1200.Process(value);
+                this.Pocsag2400.Process(value);
             }
             catch (Exception exception)
             {
