@@ -156,7 +156,7 @@
 
                     this.ChannelAccessProtocolCode += (uint)this.FrameIndex;
 
-                    for (var i = 0; i < 19; i++)
+                    for (var i = 0; i < 18; i++)
                     {
                         var position = 20 - i;
 
@@ -165,6 +165,9 @@
                             this.ChannelAccessProtocolCode += (uint)(1 << position);
                         }
                     }
+
+                    var x = BitConverter.GetBytes(this.ChannelAccessProtocolCode);
+                    var y = new BitArray(x);
 
                     for (var i = 18; i < 20; i++)
                     {
