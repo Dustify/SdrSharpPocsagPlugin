@@ -1,16 +1,13 @@
 ﻿namespace Pocsag
 {
     using System;
+    using System.Collections.Generic;
 
     public class Manager
     {
         public int SampleRate { get; }
 
-        public PocsagDecoder Pocsag512 { get; }
-
-        public PocsagDecoder Pocsag1200 { get; }
-
-        public PocsagDecoder Pocsag2400 { get; }
+        public List<DecoderBase> Decoders { get; }
 
         public Manager(int sampleRate, Action<PocsagMessage> messageReceived)
         {
@@ -18,11 +15,12 @@
             {
                 this.SampleRate = sampleRate;
 
-                this.Pocsag512 = new PocsagDecoder(512, this.SampleRate, messageReceived);
+                this.Decoders = new List<DecoderBase>();
 
-                this.Pocsag1200 = new PocsagDecoder(1200, this.SampleRate, messageReceived);
-
-                this.Pocsag2400 = new PocsagDecoder(2400, this.SampleRate, messageReceived);
+                this.Decoders.Add(new PocsagDecoder(512, this.SampleRate, messageReceived));
+                this.Decoders.Add(new PocsagDecoder(1200, this.SampleRate, messageReceived));
+                this.Decoders.Add(new PocsagDecoder(2400, this.SampleRate, messageReceived));
+                //this.Decoders.Add(new FlexDecoder(1600, this.SampleRate, messageReceived));
             }
             catch (Exception exception)
             {
@@ -34,9 +32,10 @@
         {
             try
             {
-                this.Pocsag512.Process(value);
-                this.Pocsag1200.Process(value);
-                this.Pocsag2400.Process(value);
+                foreach (var decoder in this.Decoders)
+                {
+                    decoder.Process(value);
+                }
             }
             catch (Exception exception)
             {
