@@ -13,7 +13,7 @@
         private PocsagProcessor processor;
 
         private BindingSource bindingSource;
-        private BindingList<Pocsag.Message> bindingList;
+        private BindingList<Pocsag.PocsagMessage> bindingList;
 
         private bool deDuplicate = true;
 
@@ -24,7 +24,7 @@
             InitializeComponent();
 
             this.bindingSource = new BindingSource();
-            this.bindingList = new BindingList<Pocsag.Message>();
+            this.bindingList = new BindingList<Pocsag.PocsagMessage>();
 
             this.bindingSource.DataSource = this.bindingList;
 
@@ -33,7 +33,7 @@
             this.processor =
                 new PocsagProcessor(
                     this.control.AudioSampleRate,
-                    (Pocsag.Message message) =>
+                    (Pocsag.PocsagMessage message) =>
                     {
                         this.MessageReceived(message);
                     });
@@ -70,12 +70,12 @@
                 };
         }
 
-        private void MessageReceived(Pocsag.Message message)
+        private void MessageReceived(Pocsag.PocsagMessage message)
         {
             if (this.InvokeRequired)
             {
                 this.BeginInvoke(
-                    new Action<Pocsag.Message>(
+                    new Action<Pocsag.PocsagMessage>(
                         (message) =>
                         {
                             // skip duplicate messages

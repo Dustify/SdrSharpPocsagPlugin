@@ -11,7 +11,7 @@
 
         public Manager Manager { get; set; }
 
-        public PocsagProcessor(double sampleRate, Action<Message> messageReceived)
+        public PocsagProcessor(double sampleRate, Action<PocsagMessage> messageReceived)
         {
             try
             {

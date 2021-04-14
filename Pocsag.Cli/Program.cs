@@ -9,8 +9,7 @@
         {
             try
             {
-                var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210322_165253Z_153350000Hz_AF.wav");
-                //var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210407_174912Z_153350000Hz_AF.wav");
+                var file = new NAudio.Wave.WaveFileReader("FLEX_2-LVL_1600_bps.wav");
 
                 var samples = new List<float>();
 
@@ -29,7 +28,7 @@
                 var pocsagManager =
                     new Manager(
                         file.WaveFormat.SampleRate,
-                        (Message message) =>
+                        (PocsagMessage message) =>
                         {
                             Console.WriteLine(message.Payload);
                         });
