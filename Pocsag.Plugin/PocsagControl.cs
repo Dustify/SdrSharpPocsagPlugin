@@ -12,26 +12,24 @@
 
         private PocsagProcessor processor;
 
+        public PocsagSettings Settings { get; }
+
         private BindingSource bindingSource;
-        private BindingList<Pocsag.PocsagMessage> bindingList;
-
-        private bool deDuplicate = true;
-
-        private bool hideBad = true;
+        private BindingList<PocsagMessage> bindingList;
 
         protected DataGridViewColumn PayloadColumn => this.dataGridView1.Columns["Payload"];
 
         private void UpdateMultilineMode()
         {
-            var enableWrap = this.checkBoxMultiline.Checked;
+            this.Settings.MultilinePayload = this.checkBoxMultiline.Checked;
 
             this.PayloadColumn.DefaultCellStyle.WrapMode =
-               enableWrap ?
+               this.Settings.MultilinePayload ?
                     DataGridViewTriState.True :
                     DataGridViewTriState.False;
 
             this.PayloadColumn.AutoSizeMode =
-                enableWrap ?
+                this.Settings.MultilinePayload ?
                     DataGridViewAutoSizeColumnMode.Fill :
                     DataGridViewAutoSizeColumnMode.NotSet;
         }
@@ -39,6 +37,8 @@
         public PocsagControl(ISharpControl control)
         {
             InitializeComponent();
+
+            this.Settings = new PocsagSettings();
 
             this.bindingSource = new BindingSource();
             this.bindingList = new BindingList<Pocsag.PocsagMessage>();
@@ -65,20 +65,21 @@
 
             this.dataGridView1.DataSource = this.bindingSource;
 
-            this.checkBoxDeDuplicate.Checked = this.deDuplicate;
-            this.checkBoxHideBad.Checked = this.hideBad;
-            this.checkBoxMultiline.Checked = false;
+            this.checkBoxDeDuplicate.Checked = this.Settings.DeDuplicate;
+            this.checkBoxHideBad.Checked = this.Settings.HideBadDecodes;
+            this.checkBoxMultiline.Checked = this.Settings.MultilinePayload;
 
             this.checkBoxDeDuplicate.Click +=
                 (object sender, EventArgs e) =>
                 {
-                    this.deDuplicate = this.checkBoxDeDuplicate.Checked;
+
+                    this.Settings.DeDuplicate = this.checkBoxDeDuplicate.Checked;
                 };
 
             this.checkBoxHideBad.Click +=
                 (object sender, EventArgs e) =>
                 {
-                    this.hideBad = this.checkBoxHideBad.Checked;
+                    this.Settings.HideBadDecodes = this.checkBoxHideBad.Checked;
                 };
 
             this.checkBoxMultiline.Click +=
@@ -95,26 +96,39 @@
 
             this.UpdateMultilineMode();
 
-            this.pocsagFd512.Value = this.processor.Manager.Pocsag512FilterDepth;
-            this.pocsagFd1200.Value = this.processor.Manager.Pocsag1200FilterDepth;
-            this.pocsagFd2400.Value = this.processor.Manager.Pocsag2400FilterDepth;
+            this.pocsagFd512.Value = this.Settings.Pocsag512FilterDepth;
+            this.pocsagFd1200.Value = this.Settings.Pocsag1200FilterDepth;
+            this.pocsagFd2400.Value = this.Settings.Pocsag2400FilterDepth;
+
+            this.processor.Manager.Pocsag512FilterDepth = (int)this.pocsagFd512.Value;
+            this.processor.Manager.Pocsag1200FilterDepth = (int)this.pocsagFd1200.Value;
+            this.processor.Manager.Pocsag2400FilterDepth = (int)this.pocsagFd2400.Value;
 
             this.pocsagFd512.ValueChanged +=
                 (object sender, EventArgs e) =>
                 {
-                    this.processor.Manager.Pocsag512FilterDepth = (int)this.pocsagFd512.Value;
+                    var value = (int)this.pocsagFd512.Value;
+
+                    this.Settings.Pocsag512FilterDepth = value;
+                    this.processor.Manager.Pocsag512FilterDepth = value;
                 };
 
             this.pocsagFd1200.ValueChanged +=
                (object sender, EventArgs e) =>
                {
-                   this.processor.Manager.Pocsag1200FilterDepth = (int)this.pocsagFd1200.Value;
+                   var value = (int)this.pocsagFd1200.Value;
+
+                   this.Settings.Pocsag1200FilterDepth = value;
+                   this.processor.Manager.Pocsag1200FilterDepth = value;
                };
 
             this.pocsagFd2400.ValueChanged +=
                (object sender, EventArgs e) =>
                {
-                   this.processor.Manager.Pocsag2400FilterDepth = (int)this.pocsagFd2400.Value;
+                   var value = (int)this.pocsagFd2400.Value;
+
+                   this.Settings.Pocsag2400FilterDepth = value;
+                   this.processor.Manager.Pocsag2400FilterDepth = value;
                };
         }
 
@@ -127,14 +141,14 @@
                         (message) =>
                         {
                             // skip duplicate messages
-                            if (this.deDuplicate &&
+                            if (this.Settings.DeDuplicate &&
                                     message.Payload != string.Empty &&
                                     this.bindingList.Any(x => x.Hash == message.Hash))
                             {
                                 return;
                             }
 
-                            if (this.hideBad && !message.IsValid)
+                            if (this.Settings.HideBadDecodes && !message.IsValid)
                             {
                                 return;
                             }
