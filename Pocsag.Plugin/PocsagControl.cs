@@ -19,6 +19,23 @@
 
         private bool hideBad = true;
 
+        protected DataGridViewColumn PayloadColumn => this.dataGridView1.Columns["Payload"];
+
+        private void UpdateMultilineMode()
+        {
+            var enableWrap = this.checkBoxMultiline.Checked;
+
+            this.PayloadColumn.DefaultCellStyle.WrapMode =
+               enableWrap ?
+                    DataGridViewTriState.True :
+                    DataGridViewTriState.False;
+
+            this.PayloadColumn.AutoSizeMode =
+                enableWrap ?
+                    DataGridViewAutoSizeColumnMode.Fill :
+                    DataGridViewAutoSizeColumnMode.NotSet;
+        }
+
         public PocsagControl(ISharpControl control)
         {
             InitializeComponent();
@@ -50,6 +67,7 @@
 
             this.checkBoxDeDuplicate.Checked = this.deDuplicate;
             this.checkBoxHideBad.Checked = this.hideBad;
+            this.checkBoxMultiline.Checked = false;
 
             this.checkBoxDeDuplicate.Click +=
                 (object sender, EventArgs e) =>
@@ -63,11 +81,19 @@
                     this.hideBad = this.checkBoxHideBad.Checked;
                 };
 
+            this.checkBoxMultiline.Click +=
+                (object sender, EventArgs e) =>
+                {
+                    this.UpdateMultilineMode();
+                };
+
             this.buttonClear.Click +=
                 (object sender, EventArgs e) =>
                 {
                     this.bindingList.Clear();
                 };
+
+            this.UpdateMultilineMode();
         }
 
         private void MessageReceived(Pocsag.PocsagMessage message)
