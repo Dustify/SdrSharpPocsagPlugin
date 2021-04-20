@@ -9,7 +9,7 @@
         {
             try
             {
-                var file = new NAudio.Wave.WaveFileReader("FLEX_2-LVL_1600_bps.wav");
+                var file = new NAudio.Wave.WaveFileReader("POCSAG500_interference_tonyp.wav");
 
                 var samples = new List<float>();
 
@@ -30,6 +30,7 @@
                         file.WaveFormat.SampleRate,
                         (PocsagMessage message) =>
                         {
+                            Console.Write($"{message.Bps} {message.ErrorsCorrected} ");
                             Console.WriteLine(message.Payload);
                         });
 
