@@ -14,14 +14,38 @@
 
         public PocsagMessage CurrentMessage { get; private set; }
 
+        public override int FilterDepth
+        {
+            get
+            {
+                if (this.Bps == 2400)
+                {
+                    return 25;
+                }
+
+                if (this.Bps == 1200)
+                {
+                    return 51;
+                }
+
+                if (this.Bps == 512)
+                {
+                    return 105;
+                }
+
+                return 1;
+            }
+        }
+
+
         public PocsagDecoder(uint baud, int sampleRate, Action<PocsagMessage> messageReceived) :
             base(baud, sampleRate, messageReceived)
         {
             try
             {
-                while (this.Buffer.Count < 32)
+                while (this.BitBuffer.Count < 32)
                 {
-                    this.Buffer.Add(false);
+                    this.BitBuffer.Add(false);
                 }
 
                 this.BatchIndex = -1;
@@ -89,13 +113,13 @@
                     else
                     {
                         // address code word? queue current message and start new message
-                        if (this.Buffer[0] == false)
+                        if (this.BitBuffer[0] == false)
                         {
                             this.QueueCurrentMessage();
                         }
 
                         this.CurrentMessage.AppendCodeWord(
-                            this.Buffer.ToArray(),
+                            this.BitBuffer.ToArray(),
                             this.FrameIndex);
                     }
 
