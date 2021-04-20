@@ -1,6 +1,6 @@
 # Screenshot
 
-![POCSAG decoder](https://i.imgur.com/PsVOdEH.png)
+![POCSAG decoder](https://i.imgur.com/WJaRTUd.png)
 
 # Installation
 
@@ -27,6 +27,16 @@ The payload of each message is hashed (ignoring the first 9 characters, which se
 
 ### Hide bad decodes
 Any messages that have failed BCH (CRC) or parity checks will be ignored.
+
+### Wrap payload
+The payload section of the table will wrap rather than expand horizontally, newlines in payload data will also be respected.
+
+### POCSAG 512 / 1200 / 2400 filter depths
+Three controls are available to adjust the length of the moving average filter for each decoder. The filter aims to help decode noisy signals.
+
+These values should be set as low as possible otherwise the data may be 'smoothed into incoherence'.
+
+The filters can essentially be disabled by using a value of '1'.
 
 ### Clear
 Will remove all messages from the buffer.
