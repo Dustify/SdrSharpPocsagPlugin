@@ -27,6 +27,8 @@
                     samples.Add(frame[0]);
                 }
 
+                var decodes = 0;
+
                 var pocsagManager =
                     new Manager(
                         file.WaveFormat.SampleRate,
@@ -39,6 +41,8 @@
 
                             Console.Write($"{message.Bps} {message.ErrorsCorrected} ");
                             Console.WriteLine(message.Payload);
+
+                            decodes++;
                         });
 
                 foreach (var sample in samples)
@@ -46,10 +50,12 @@
                     pocsagManager.Process(sample);
                 }
 
+                Console.WriteLine($"Decodes: {decodes}");
             }
             catch (Exception exception)
             {
                 Log.LogException(exception);
+                Console.WriteLine($"Exception: {exception.Message}");
             }
 
             Console.WriteLine("Done.");
