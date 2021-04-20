@@ -37,7 +37,7 @@
                                 return;
                             }
 
-                            Console.Write($"{message.Bps} ");
+                            Console.Write($"{message.Bps} {message.ErrorsCorrected} ");
                             Console.WriteLine(message.Payload);
                         });
 
