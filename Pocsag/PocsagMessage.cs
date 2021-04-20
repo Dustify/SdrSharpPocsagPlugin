@@ -21,6 +21,8 @@
 
         public bool IsValid => !this.HasBchError && !this.HasParityError;
 
+        public int ErrorsCorrected { get; private set; }
+
         public static readonly Dictionary<byte, char> NumericMapping =
             new Dictionary<byte, char>()
             {
@@ -106,6 +108,56 @@
         {
             try
             {
+                if (this.CheckBchError(codeWord))
+                {
+                    this.HasBchError = true;
+
+                    // 1 bit error correction
+
+                    for (var i = 0; i < codeWord.Length && this.HasBchError; i++)
+                    {
+                        var codeWordToCheck = (bool[])codeWord.Clone();
+
+                        codeWordToCheck[i] = !codeWordToCheck[i];
+
+                        if (!this.CheckBchError(codeWordToCheck))
+                        {
+                            codeWord = codeWordToCheck;
+
+                            this.ErrorsCorrected++;
+
+                            this.HasBchError = false;
+                        }
+                    }
+
+                    // 2 bit error correction
+
+                    for (var x = 0; x < codeWord.Length && this.HasBchError; x++)
+                    {
+                        for (var y = 0; y < codeWord.Length && this.HasBchError; y++)
+                        {
+                            if (x == y)
+                            {
+                                continue;
+                            }
+
+                            var codeWordToCheck = (bool[])codeWord.Clone();
+
+                            codeWordToCheck[x] = !codeWordToCheck[x];
+                            codeWordToCheck[y] = !codeWordToCheck[y];
+
+                            if (!this.CheckBchError(codeWordToCheck))
+                            {
+                                codeWord = codeWordToCheck;
+
+                                this.ErrorsCorrected += 2;
+
+                                this.HasBchError = false;
+                            }
+                        }
+                    }
+                }
+
                 this.HasData = true;
 
                 var data = new bool[20];
@@ -116,11 +168,6 @@
                 Array.Copy(codeWord, 21, bch, 0, 10);
 
                 var parity = codeWord[31];
-
-                if (this.CheckBchError(codeWord))
-                {
-                    this.HasBchError = true;
-                }
 
                 // start parity check
                 var trueCount = codeWord.Take(31).Count(x => x == true);
