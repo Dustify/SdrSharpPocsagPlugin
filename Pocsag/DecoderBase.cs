@@ -20,7 +20,27 @@
 
         public int SamplesForCurrentValue { get; private set; }
 
-        public abstract int FilterDepth { get; }
+        private int _filterDepth;
+
+        public int FilterDepth
+        {
+            get
+            {
+                if (this._filterDepth > 1)
+                {
+                    return this._filterDepth;
+                }
+
+                return 1;
+            }
+
+            set
+            {
+                this._filterDepth = value;
+            }
+        }
+
+        public List<float> Filter = new List<float>();
 
         public DecoderBase(uint baud, int sampleRate, Action<PocsagMessage> messageReceived)
         {
@@ -60,15 +80,13 @@
             return result;
         }
 
-        public List<float> Filter = new List<float>();
-
         public void Process(float level)
         {
             try
             {
                 this.Filter.Add(level);
 
-                while (this.Filter.Count > this.FilterDepth )
+                while (this.Filter.Count > this.FilterDepth)
                 {
                     this.Filter.RemoveAt(0);
                 }

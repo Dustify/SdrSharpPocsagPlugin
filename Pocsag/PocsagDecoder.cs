@@ -14,30 +14,6 @@
 
         public PocsagMessage CurrentMessage { get; private set; }
 
-        public override int FilterDepth
-        {
-            get
-            {
-                if (this.Bps == 2400)
-                {
-                    return 25;
-                }
-
-                if (this.Bps == 1200)
-                {
-                    return 51;
-                }
-
-                if (this.Bps == 512)
-                {
-                    return 105;
-                }
-
-                return 1;
-            }
-        }
-
-
         public PocsagDecoder(uint baud, int sampleRate, Action<PocsagMessage> messageReceived) :
             base(baud, sampleRate, messageReceived)
         {
@@ -54,6 +30,19 @@
                 this.CodeWordPosition = -1;
 
                 this.QueueCurrentMessage();
+
+                switch (baud)
+                {
+                    case 512:
+                        this.FilterDepth = 92;
+                        break;
+                    case 1200:
+                        this.FilterDepth = 46;
+                        break;
+                    case 2400:
+                        this.FilterDepth = 23;
+                        break;
+                }
             }
             catch (Exception exception)
             {

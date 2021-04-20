@@ -10,8 +10,6 @@
 
         }
 
-        public override int FilterDepth => 1;
-
         public override void BufferUpdated(uint bufferValue)
         {
             if (bufferValue == 0b10101010101010101010101010101010 ||

@@ -94,6 +94,28 @@
                 };
 
             this.UpdateMultilineMode();
+
+            this.pocsagFd512.Value = this.processor.Manager.Pocsag512FilterDepth;
+            this.pocsagFd1200.Value = this.processor.Manager.Pocsag1200FilterDepth;
+            this.pocsagFd2400.Value = this.processor.Manager.Pocsag2400FilterDepth;
+
+            this.pocsagFd512.ValueChanged +=
+                (object sender, EventArgs e) =>
+                {
+                    this.processor.Manager.Pocsag512FilterDepth = (int)this.pocsagFd512.Value;
+                };
+
+            this.pocsagFd1200.ValueChanged +=
+               (object sender, EventArgs e) =>
+               {
+                   this.processor.Manager.Pocsag1200FilterDepth = (int)this.pocsagFd1200.Value;
+               };
+
+            this.pocsagFd2400.ValueChanged +=
+               (object sender, EventArgs e) =>
+               {
+                   this.processor.Manager.Pocsag2400FilterDepth = (int)this.pocsagFd2400.Value;
+               };
         }
 
         private void MessageReceived(Pocsag.PocsagMessage message)
