@@ -31,14 +31,6 @@ namespace Pocsag.Plugin
         {
             this.components = new System.ComponentModel.Container();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
-            this.checkBoxHideBad = new System.Windows.Forms.CheckBox();
-            this.buttonClear = new System.Windows.Forms.Button();
-            this.checkBoxMultiline = new System.Windows.Forms.CheckBox();
-            this.pocsagFd2400 = new System.Windows.Forms.NumericUpDown();
-            this.pocsagFd1200 = new System.Windows.Forms.NumericUpDown();
-            this.pocsagFd512 = new System.Windows.Forms.NumericUpDown();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FrameIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -49,6 +41,14 @@ namespace Pocsag.Plugin
             this.ErrorsCorrected = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
+            this.checkBoxHideBad = new System.Windows.Forms.CheckBox();
+            this.buttonClear = new System.Windows.Forms.Button();
+            this.checkBoxMultiline = new System.Windows.Forms.CheckBox();
+            this.pocsagFd2400 = new System.Windows.Forms.NumericUpDown();
+            this.pocsagFd1200 = new System.Windows.Forms.NumericUpDown();
+            this.pocsagFd512 = new System.Windows.Forms.NumericUpDown();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pocsagFd2400)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pocsagFd1200)).BeginInit();
@@ -83,6 +83,86 @@ namespace Pocsag.Plugin
             this.dataGridView1.Size = new System.Drawing.Size(1418, 381);
             this.dataGridView1.TabIndex = 0;
             // 
+            // Timestamp
+            // 
+            this.Timestamp.DataPropertyName = "TimestampText";
+            this.Timestamp.HeaderText = "Timestamp";
+            this.Timestamp.Name = "Timestamp";
+            this.Timestamp.ReadOnly = true;
+            this.Timestamp.Width = 91;
+            // 
+            // FrameIndex
+            // 
+            this.FrameIndex.DataPropertyName = "FrameIndex";
+            this.FrameIndex.HeaderText = "Frame Index";
+            this.FrameIndex.Name = "FrameIndex";
+            this.FrameIndex.ReadOnly = true;
+            this.FrameIndex.Width = 89;
+            // 
+            // Address
+            // 
+            this.Address.DataPropertyName = "Address";
+            this.Address.HeaderText = "Address";
+            this.Address.Name = "Address";
+            this.Address.ReadOnly = true;
+            this.Address.Width = 74;
+            // 
+            // Function
+            // 
+            this.Function.DataPropertyName = "Function";
+            this.Function.HeaderText = "Function";
+            this.Function.Name = "Function";
+            this.Function.ReadOnly = true;
+            this.Function.Width = 79;
+            // 
+            // Bps
+            // 
+            this.Bps.DataPropertyName = "Bps";
+            this.Bps.HeaderText = "BPS";
+            this.Bps.Name = "Bps";
+            this.Bps.ReadOnly = true;
+            this.Bps.Width = 52;
+            // 
+            // HasBchErrorText
+            // 
+            this.HasBchErrorText.DataPropertyName = "HasBchErrorText";
+            this.HasBchErrorText.HeaderText = "BCH Error(s)";
+            this.HasBchErrorText.Name = "HasBchErrorText";
+            this.HasBchErrorText.ReadOnly = true;
+            this.HasBchErrorText.Width = 89;
+            // 
+            // HasParityErrorText
+            // 
+            this.HasParityErrorText.DataPropertyName = "HasParityErrorText";
+            this.HasParityErrorText.HeaderText = "Parity Error(s)";
+            this.HasParityErrorText.Name = "HasParityErrorText";
+            this.HasParityErrorText.ReadOnly = true;
+            this.HasParityErrorText.Width = 95;
+            // 
+            // ErrorsCorrected
+            // 
+            this.ErrorsCorrected.DataPropertyName = "ErrorsCorrected";
+            this.ErrorsCorrected.HeaderText = "Errors Corrected";
+            this.ErrorsCorrected.Name = "ErrorsCorrected";
+            this.ErrorsCorrected.ReadOnly = true;
+            this.ErrorsCorrected.Width = 107;
+            // 
+            // Type
+            // 
+            this.Type.DataPropertyName = "TypeText";
+            this.Type.HeaderText = "Type";
+            this.Type.Name = "Type";
+            this.Type.ReadOnly = true;
+            this.Type.Width = 56;
+            // 
+            // Payload
+            // 
+            this.Payload.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Payload.DataPropertyName = "Payload";
+            this.Payload.HeaderText = "Payload";
+            this.Payload.Name = "Payload";
+            this.Payload.ReadOnly = true;
+            // 
             // checkBoxDeDuplicate
             // 
             this.checkBoxDeDuplicate.AutoSize = true;
@@ -111,6 +191,7 @@ namespace Pocsag.Plugin
             this.buttonClear.Size = new System.Drawing.Size(75, 23);
             this.buttonClear.TabIndex = 3;
             this.buttonClear.Text = "Clear";
+            this.toolTip1.SetToolTip(this.buttonClear, "Clear all entries from the table");
             this.buttonClear.UseVisualStyleBackColor = true;
             // 
             // checkBoxMultiline
@@ -199,86 +280,6 @@ namespace Pocsag.Plugin
             // toolTip1
             // 
             this.toolTip1.AutomaticDelay = 0;
-            // 
-            // Timestamp
-            // 
-            this.Timestamp.DataPropertyName = "TimestampText";
-            this.Timestamp.HeaderText = "Timestamp";
-            this.Timestamp.Name = "Timestamp";
-            this.Timestamp.ReadOnly = true;
-            this.Timestamp.Width = 91;
-            // 
-            // FrameIndex
-            // 
-            this.FrameIndex.DataPropertyName = "FrameIndex";
-            this.FrameIndex.HeaderText = "Frame Index";
-            this.FrameIndex.Name = "FrameIndex";
-            this.FrameIndex.ReadOnly = true;
-            this.FrameIndex.Width = 97;
-            // 
-            // Address
-            // 
-            this.Address.DataPropertyName = "Address";
-            this.Address.HeaderText = "Address";
-            this.Address.Name = "Address";
-            this.Address.ReadOnly = true;
-            this.Address.Width = 74;
-            // 
-            // Function
-            // 
-            this.Function.DataPropertyName = "Function";
-            this.Function.HeaderText = "Function";
-            this.Function.Name = "Function";
-            this.Function.ReadOnly = true;
-            this.Function.Width = 79;
-            // 
-            // Bps
-            // 
-            this.Bps.DataPropertyName = "Bps";
-            this.Bps.HeaderText = "BPS";
-            this.Bps.Name = "Bps";
-            this.Bps.ReadOnly = true;
-            this.Bps.Width = 52;
-            // 
-            // HasBchErrorText
-            // 
-            this.HasBchErrorText.DataPropertyName = "HasBchErrorText";
-            this.HasBchErrorText.HeaderText = "BCH Error(s)";
-            this.HasBchErrorText.Name = "HasBchErrorText";
-            this.HasBchErrorText.ReadOnly = true;
-            this.HasBchErrorText.Width = 97;
-            // 
-            // HasParityErrorText
-            // 
-            this.HasParityErrorText.DataPropertyName = "HasParityErrorText";
-            this.HasParityErrorText.HeaderText = "Parity Error(s)";
-            this.HasParityErrorText.Name = "HasParityErrorText";
-            this.HasParityErrorText.ReadOnly = true;
-            this.HasParityErrorText.Width = 103;
-            // 
-            // ErrorsCorrected
-            // 
-            this.ErrorsCorrected.DataPropertyName = "ErrorsCorrected";
-            this.ErrorsCorrected.HeaderText = "Errors Corrected";
-            this.ErrorsCorrected.Name = "ErrorsCorrected";
-            this.ErrorsCorrected.ReadOnly = true;
-            this.ErrorsCorrected.Width = 107;
-            // 
-            // Type
-            // 
-            this.Type.DataPropertyName = "TypeText";
-            this.Type.HeaderText = "Type";
-            this.Type.Name = "Type";
-            this.Type.ReadOnly = true;
-            this.Type.Width = 56;
-            // 
-            // Payload
-            // 
-            this.Payload.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Payload.DataPropertyName = "Payload";
-            this.Payload.HeaderText = "Payload";
-            this.Payload.Name = "Payload";
-            this.Payload.ReadOnly = true;
             // 
             // PocsagControl
             // 
