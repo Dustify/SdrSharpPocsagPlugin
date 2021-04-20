@@ -114,7 +114,7 @@
 
                     // 1 bit error correction
 
-                    for (var i = 0; i < codeWord.Length && this.HasBchError; i++)
+                    for (var i = 0; i < codeWord.Length - 1 && this.HasBchError; i++)
                     {
                         var codeWordToCheck = (bool[])codeWord.Clone();
 
@@ -132,9 +132,9 @@
 
                     // 2 bit error correction
 
-                    for (var x = 0; x < codeWord.Length && this.HasBchError; x++)
+                    for (var x = 0; x < codeWord.Length - 1 && this.HasBchError; x++)
                     {
-                        for (var y = 0; y < codeWord.Length && this.HasBchError; y++)
+                        for (var y = 0; y < codeWord.Length - 1 && this.HasBchError; y++)
                         {
                             if (x == y)
                             {

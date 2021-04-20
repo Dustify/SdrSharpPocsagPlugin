@@ -29,7 +29,16 @@ namespace Pocsag.Plugin
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
+            this.checkBoxHideBad = new System.Windows.Forms.CheckBox();
+            this.buttonClear = new System.Windows.Forms.Button();
+            this.checkBoxMultiline = new System.Windows.Forms.CheckBox();
+            this.pocsagFd2400 = new System.Windows.Forms.NumericUpDown();
+            this.pocsagFd1200 = new System.Windows.Forms.NumericUpDown();
+            this.pocsagFd512 = new System.Windows.Forms.NumericUpDown();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FrameIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -37,13 +46,13 @@ namespace Pocsag.Plugin
             this.Bps = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasBchErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HasParityErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ErrorsCorrected = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
-            this.checkBoxHideBad = new System.Windows.Forms.CheckBox();
-            this.buttonClear = new System.Windows.Forms.Button();
-            this.checkBoxMultiline = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pocsagFd2400)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pocsagFd1200)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pocsagFd512)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -64,14 +73,132 @@ namespace Pocsag.Plugin
             this.Bps,
             this.HasBchErrorText,
             this.HasParityErrorText,
+            this.ErrorsCorrected,
             this.Type,
             this.Payload});
             this.dataGridView1.Location = new System.Drawing.Point(0, 30);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowTemplate.Height = 25;
-            this.dataGridView1.Size = new System.Drawing.Size(697, 381);
+            this.dataGridView1.Size = new System.Drawing.Size(1418, 381);
             this.dataGridView1.TabIndex = 0;
+            // 
+            // checkBoxDeDuplicate
+            // 
+            this.checkBoxDeDuplicate.AutoSize = true;
+            this.checkBoxDeDuplicate.Location = new System.Drawing.Point(5, 5);
+            this.checkBoxDeDuplicate.Name = "checkBoxDeDuplicate";
+            this.checkBoxDeDuplicate.Size = new System.Drawing.Size(94, 19);
+            this.checkBoxDeDuplicate.TabIndex = 1;
+            this.checkBoxDeDuplicate.Text = "De-duplicate";
+            this.checkBoxDeDuplicate.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxHideBad
+            // 
+            this.checkBoxHideBad.AutoSize = true;
+            this.checkBoxHideBad.Location = new System.Drawing.Point(106, 5);
+            this.checkBoxHideBad.Name = "checkBoxHideBad";
+            this.checkBoxHideBad.Size = new System.Drawing.Size(121, 19);
+            this.checkBoxHideBad.TabIndex = 2;
+            this.checkBoxHideBad.Text = "Hide bad decodes";
+            this.checkBoxHideBad.UseVisualStyleBackColor = true;
+            // 
+            // buttonClear
+            // 
+            this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClear.Location = new System.Drawing.Point(1337, 5);
+            this.buttonClear.Name = "buttonClear";
+            this.buttonClear.Size = new System.Drawing.Size(75, 23);
+            this.buttonClear.TabIndex = 3;
+            this.buttonClear.Text = "Clear";
+            this.buttonClear.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxMultiline
+            // 
+            this.checkBoxMultiline.AutoSize = true;
+            this.checkBoxMultiline.Location = new System.Drawing.Point(234, 5);
+            this.checkBoxMultiline.Name = "checkBoxMultiline";
+            this.checkBoxMultiline.Size = new System.Drawing.Size(99, 19);
+            this.checkBoxMultiline.TabIndex = 4;
+            this.checkBoxMultiline.Text = "Wrap payload";
+            this.checkBoxMultiline.UseVisualStyleBackColor = true;
+            // 
+            // pocsagFd2400
+            // 
+            this.pocsagFd2400.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pocsagFd2400.Location = new System.Drawing.Point(1281, 5);
+            this.pocsagFd2400.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pocsagFd2400.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pocsagFd2400.Name = "pocsagFd2400";
+            this.pocsagFd2400.Size = new System.Drawing.Size(50, 23);
+            this.pocsagFd2400.TabIndex = 5;
+            this.toolTip1.SetToolTip(this.pocsagFd2400, "POCSAG 2400 filter depth");
+            this.pocsagFd2400.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // pocsagFd1200
+            // 
+            this.pocsagFd1200.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pocsagFd1200.Location = new System.Drawing.Point(1225, 5);
+            this.pocsagFd1200.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pocsagFd1200.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pocsagFd1200.Name = "pocsagFd1200";
+            this.pocsagFd1200.Size = new System.Drawing.Size(50, 23);
+            this.pocsagFd1200.TabIndex = 7;
+            this.toolTip1.SetToolTip(this.pocsagFd1200, "POCSAG 1200 filter depth");
+            this.pocsagFd1200.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // pocsagFd512
+            // 
+            this.pocsagFd512.AccessibleDescription = "";
+            this.pocsagFd512.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pocsagFd512.Location = new System.Drawing.Point(1169, 5);
+            this.pocsagFd512.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pocsagFd512.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pocsagFd512.Name = "pocsagFd512";
+            this.pocsagFd512.Size = new System.Drawing.Size(50, 23);
+            this.pocsagFd512.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.pocsagFd512, "POCSAG 512 filter depth");
+            this.pocsagFd512.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // toolTip1
+            // 
+            this.toolTip1.AutomaticDelay = 0;
             // 
             // Timestamp
             // 
@@ -129,6 +256,14 @@ namespace Pocsag.Plugin
             this.HasParityErrorText.ReadOnly = true;
             this.HasParityErrorText.Width = 103;
             // 
+            // ErrorsCorrected
+            // 
+            this.ErrorsCorrected.DataPropertyName = "ErrorsCorrected";
+            this.ErrorsCorrected.HeaderText = "Errors Corrected";
+            this.ErrorsCorrected.Name = "ErrorsCorrected";
+            this.ErrorsCorrected.ReadOnly = true;
+            this.ErrorsCorrected.Width = 107;
+            // 
             // Type
             // 
             this.Type.DataPropertyName = "TypeText";
@@ -145,58 +280,24 @@ namespace Pocsag.Plugin
             this.Payload.Name = "Payload";
             this.Payload.ReadOnly = true;
             // 
-            // checkBoxDeDuplicate
-            // 
-            this.checkBoxDeDuplicate.AutoSize = true;
-            this.checkBoxDeDuplicate.Location = new System.Drawing.Point(5, 5);
-            this.checkBoxDeDuplicate.Name = "checkBoxDeDuplicate";
-            this.checkBoxDeDuplicate.Size = new System.Drawing.Size(94, 19);
-            this.checkBoxDeDuplicate.TabIndex = 1;
-            this.checkBoxDeDuplicate.Text = "De-duplicate";
-            this.checkBoxDeDuplicate.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxHideBad
-            // 
-            this.checkBoxHideBad.AutoSize = true;
-            this.checkBoxHideBad.Location = new System.Drawing.Point(106, 5);
-            this.checkBoxHideBad.Name = "checkBoxHideBad";
-            this.checkBoxHideBad.Size = new System.Drawing.Size(121, 19);
-            this.checkBoxHideBad.TabIndex = 2;
-            this.checkBoxHideBad.Text = "Hide bad decodes";
-            this.checkBoxHideBad.UseVisualStyleBackColor = true;
-            // 
-            // buttonClear
-            // 
-            this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClear.Location = new System.Drawing.Point(616, 5);
-            this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(75, 23);
-            this.buttonClear.TabIndex = 3;
-            this.buttonClear.Text = "Clear";
-            this.buttonClear.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxMultiline
-            // 
-            this.checkBoxMultiline.AutoSize = true;
-            this.checkBoxMultiline.Location = new System.Drawing.Point(234, 5);
-            this.checkBoxMultiline.Name = "checkBoxMultiline";
-            this.checkBoxMultiline.Size = new System.Drawing.Size(99, 19);
-            this.checkBoxMultiline.TabIndex = 4;
-            this.checkBoxMultiline.Text = "Wrap payload";
-            this.checkBoxMultiline.UseVisualStyleBackColor = true;
-            // 
             // PocsagControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pocsagFd512);
+            this.Controls.Add(this.pocsagFd1200);
+            this.Controls.Add(this.pocsagFd2400);
             this.Controls.Add(this.checkBoxMultiline);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.checkBoxHideBad);
             this.Controls.Add(this.checkBoxDeDuplicate);
             this.Controls.Add(this.dataGridView1);
             this.Name = "PocsagControl";
-            this.Size = new System.Drawing.Size(697, 411);
+            this.Size = new System.Drawing.Size(1418, 411);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pocsagFd2400)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pocsagFd1200)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pocsagFd512)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -207,6 +308,11 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.CheckBox checkBoxDeDuplicate;
         private System.Windows.Forms.CheckBox checkBoxHideBad;
         private System.Windows.Forms.Button buttonClear;
+        private System.Windows.Forms.CheckBox checkBoxMultiline;
+        private System.Windows.Forms.NumericUpDown pocsagFd2400;
+        private System.Windows.Forms.NumericUpDown pocsagFd1200;
+        private System.Windows.Forms.NumericUpDown pocsagFd512;
+        private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
         private System.Windows.Forms.DataGridViewTextBoxColumn FrameIndex;
         private System.Windows.Forms.DataGridViewTextBoxColumn Address;
@@ -214,8 +320,8 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.DataGridViewTextBoxColumn Bps;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasBchErrorText;
         private System.Windows.Forms.DataGridViewTextBoxColumn HasParityErrorText;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ErrorsCorrected;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
-        private System.Windows.Forms.CheckBox checkBoxMultiline;
     }
 }

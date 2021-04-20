@@ -19,9 +19,9 @@
         {
             try
             {
-                while (this.Buffer.Count < 32)
+                while (this.BitBuffer.Count < 32)
                 {
-                    this.Buffer.Add(false);
+                    this.BitBuffer.Add(false);
                 }
 
                 this.BatchIndex = -1;
@@ -30,6 +30,19 @@
                 this.CodeWordPosition = -1;
 
                 this.QueueCurrentMessage();
+
+                switch (baud)
+                {
+                    case 512:
+                        this.FilterDepth = 92;
+                        break;
+                    case 1200:
+                        this.FilterDepth = 46;
+                        break;
+                    case 2400:
+                        this.FilterDepth = 23;
+                        break;
+                }
             }
             catch (Exception exception)
             {
@@ -89,13 +102,13 @@
                     else
                     {
                         // address code word? queue current message and start new message
-                        if (this.Buffer[0] == false)
+                        if (this.BitBuffer[0] == false)
                         {
                             this.QueueCurrentMessage();
                         }
 
                         this.CurrentMessage.AppendCodeWord(
-                            this.Buffer.ToArray(),
+                            this.BitBuffer.ToArray(),
                             this.FrameIndex);
                     }
 

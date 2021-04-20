@@ -9,6 +9,8 @@
         {
             try
             {
+                //var file = new NAudio.Wave.WaveFileReader("pocsag-short-2400.wav");
+                //var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210407_174912Z_153350000Hz_AF.wav");
                 var file = new NAudio.Wave.WaveFileReader("POCSAG500_interference_tonyp.wav");
 
                 var samples = new List<float>();
@@ -30,6 +32,11 @@
                         file.WaveFormat.SampleRate,
                         (PocsagMessage message) =>
                         {
+                            if (!message.IsValid)
+                            {
+                                return;
+                            }
+
                             Console.Write($"{message.Bps} {message.ErrorsCorrected} ");
                             Console.WriteLine(message.Payload);
                         });

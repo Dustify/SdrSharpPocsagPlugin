@@ -9,6 +9,42 @@
 
         public List<DecoderBase> Decoders { get; }
 
+        public int Pocsag512FilterDepth
+        {
+            get
+            {
+                return this.Decoders[0].FilterDepth;
+            }
+            set
+            {
+                this.Decoders[0].FilterDepth = value;
+            }
+        }
+
+        public int Pocsag1200FilterDepth
+        {
+            get
+            {
+                return this.Decoders[1].FilterDepth;
+            }
+            set
+            {
+                this.Decoders[1].FilterDepth = value;
+            }
+        }
+
+        public int Pocsag2400FilterDepth
+        {
+            get
+            {
+                return this.Decoders[2].FilterDepth;
+            }
+            set
+            {
+                this.Decoders[2].FilterDepth = value;
+            }
+        }
+
         public Manager(int sampleRate, Action<PocsagMessage> messageReceived)
         {
             try

@@ -1,6 +1,7 @@
 ﻿namespace Pocsag
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
 
     public abstract class DecoderBase
@@ -13,11 +14,33 @@
 
         public double SamplesPerBit { get; }
 
-        public List<bool> Buffer { get; }
+        public List<bool> BitBuffer { get; }
 
         public bool Value { get; private set; }
 
         public int SamplesForCurrentValue { get; private set; }
+
+        private int _filterDepth;
+
+        public int FilterDepth
+        {
+            get
+            {
+                if (this._filterDepth > 1)
+                {
+                    return this._filterDepth;
+                }
+
+                return 1;
+            }
+
+            set
+            {
+                this._filterDepth = value;
+            }
+        }
+
+        public List<float> Filter = new List<float>();
 
         public DecoderBase(uint baud, int sampleRate, Action<PocsagMessage> messageReceived)
         {
@@ -28,7 +51,7 @@
 
             this.SamplesPerBit = (double)sampleRate / (double)baud;
 
-            this.Buffer = new List<bool>();
+            this.BitBuffer = new List<bool>();
         }
 
         public abstract void BufferUpdated(uint bufferValue);
@@ -39,7 +62,7 @@
 
             try
             {
-                var buffer = this.Buffer.ToArray();
+                var buffer = this.BitBuffer.ToArray();
 
                 for (var i = 0; i < buffer.Length; i++)
                 {
@@ -61,24 +84,34 @@
         {
             try
             {
-                // get current state
-                var value = level < 0;
+                this.Filter.Add(level);
+
+                while (this.Filter.Count > this.FilterDepth)
+                {
+                    this.Filter.RemoveAt(0);
+                }
+
+                var filteredLevel = this.Filter.Average();
+
+                //get current state
+                var value = filteredLevel < 0;
 
                 // has stage changed? zero crossing
                 if (value != this.Value)
                 {
-                    var bitsForPreviousValue = (double)this.SamplesForCurrentValue / SamplesPerBit;
-                    var bitsForPreviousValueRounded = (int)Math.Round(bitsForPreviousValue);
+                    var bitsForPreviousValue = (double)this.SamplesForCurrentValue / this.SamplesPerBit;
 
-                    for (var i = 0; i < bitsForPreviousValueRounded; i++)
+                    var bitsForPreviousValueRounded = Math.Round(bitsForPreviousValue);
+
+                    for (var i = 0; i < (int)bitsForPreviousValueRounded; i++)
                     {
                         // add bits as state we have changed from
-                        this.Buffer.Add(this.Value);
+                        this.BitBuffer.Add(this.Value);
 
                         // remove old items from buffer
-                        while (this.Buffer.Count > 32)
+                        while (this.BitBuffer.Count > 32)
                         {
-                            this.Buffer.RemoveAt(0);
+                            this.BitBuffer.RemoveAt(0);
                         }
 
                         var bufferValue = this.GetBufferValue();
