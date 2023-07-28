@@ -5,8 +5,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-
-
     public class PocsagMessage : MessageBase
     {
         public const uint Generator = 1897;

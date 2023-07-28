@@ -95,41 +95,6 @@
                 };
 
             this.UpdateMultilineMode();
-
-            this.pocsagFd512.Value = this.Settings.Pocsag512FilterDepth;
-            this.pocsagFd1200.Value = this.Settings.Pocsag1200FilterDepth;
-            this.pocsagFd2400.Value = this.Settings.Pocsag2400FilterDepth;
-
-            this.processor.Manager.Pocsag512FilterDepth = (int)this.pocsagFd512.Value;
-            this.processor.Manager.Pocsag1200FilterDepth = (int)this.pocsagFd1200.Value;
-            this.processor.Manager.Pocsag2400FilterDepth = (int)this.pocsagFd2400.Value;
-
-            this.pocsagFd512.ValueChanged +=
-                (object sender, EventArgs e) =>
-                {
-                    var value = (int)this.pocsagFd512.Value;
-
-                    this.Settings.Pocsag512FilterDepth = value;
-                    this.processor.Manager.Pocsag512FilterDepth = value;
-                };
-
-            this.pocsagFd1200.ValueChanged +=
-               (object sender, EventArgs e) =>
-               {
-                   var value = (int)this.pocsagFd1200.Value;
-
-                   this.Settings.Pocsag1200FilterDepth = value;
-                   this.processor.Manager.Pocsag1200FilterDepth = value;
-               };
-
-            this.pocsagFd2400.ValueChanged +=
-               (object sender, EventArgs e) =>
-               {
-                   var value = (int)this.pocsagFd2400.Value;
-
-                   this.Settings.Pocsag2400FilterDepth = value;
-                   this.processor.Manager.Pocsag2400FilterDepth = value;
-               };
         }
 
         private void MessageReceived(Pocsag.PocsagMessage message)

@@ -1,8 +1,12 @@
-﻿namespace Pocsag
-{
-    using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-    public class PocsagDecoder : DecoderBase
+namespace Pocsag
+{
+    internal class PocsagDecoder
     {
         public int BatchIndex { get; private set; }
 
@@ -14,41 +18,10 @@
 
         public PocsagMessage CurrentMessage { get; private set; }
 
-        public PocsagDecoder(uint baud, int sampleRate, Action<PocsagMessage> messageReceived) :
-            base(baud, sampleRate, messageReceived)
-        {
-            try
-            {
-                while (this.BitBuffer.Count < 32)
-                {
-                    this.BitBuffer.Add(false);
-                }
+        public List<bool> BitBuffer { get; }
 
-                this.BatchIndex = -1;
-                this.FrameIndex = -1;
-                this.CodeWordInFrameIndex = -1;
-                this.CodeWordPosition = -1;
-
-                this.QueueCurrentMessage();
-
-                switch (baud)
-                {
-                    case 512:
-                        this.FilterDepth = 92;
-                        break;
-                    case 1200:
-                        this.FilterDepth = 46;
-                        break;
-                    case 2400:
-                        this.FilterDepth = 23;
-                        break;
-                }
-            }
-            catch (Exception exception)
-            {
-                Log.LogException(exception);
-            }
-        }
+        private uint bps;
+        private Action<PocsagMessage> messageReceived;
 
         private void QueueCurrentMessage()
         {
@@ -58,10 +31,10 @@
                     this.CurrentMessage.HasData)
                 {
                     this.CurrentMessage.ProcessPayload();
-                    this.MessageReceived(this.CurrentMessage);
+                    this.messageReceived(this.CurrentMessage);
                 }
 
-                this.CurrentMessage = new PocsagMessage(this.Bps);
+                this.CurrentMessage = new PocsagMessage(this.bps);
             }
             catch (Exception exception)
             {
@@ -69,7 +42,51 @@
             }
         }
 
-        public override void BufferUpdated(uint bufferValue)
+        public PocsagDecoder(uint bps, Action<PocsagMessage> messageReceived)
+        {
+            this.bps = bps;
+            this.messageReceived = messageReceived;
+
+            this.BitBuffer = new List<bool>();
+
+            while (this.BitBuffer.Count < 32)
+            {
+                this.BitBuffer.Add(false);
+            }
+
+            this.BatchIndex = -1;
+            this.FrameIndex = -1;
+            this.CodeWordInFrameIndex = -1;
+            this.CodeWordPosition = -1;
+
+            this.QueueCurrentMessage();
+        }
+
+        private uint GetBufferValue()
+        {
+            var result = default(uint);
+
+            try
+            {
+                var buffer = this.BitBuffer.ToArray();
+
+                for (var i = 0; i < buffer.Length; i++)
+                {
+                    if (buffer[i])
+                    {
+                        result += (uint)(1 << buffer.Length - i - 1);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.LogException(exception);
+            }
+
+            return result;
+        }
+
+        public void BufferUpdated(uint bufferValue)
         {
             // preamble
             if (bufferValue == 0b10101010101010101010101010101010 ||
@@ -135,6 +152,23 @@
                 this.FrameIndex = 0;
                 this.CodeWordPosition = 0;
                 this.CodeWordInFrameIndex = 0;
+            }
+        }
+
+        public void Process(bool[] bits)
+        {
+            foreach (var bit in bits)
+            {
+                this.BitBuffer.Add(bit);
+
+                while (this.BitBuffer.Count > 32)
+                {
+                    this.BitBuffer.RemoveAt(0);
+                }
+
+                var bufferValue = this.GetBufferValue();
+
+                this.BufferUpdated(bufferValue);
             }
         }
     }

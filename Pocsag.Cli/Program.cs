@@ -9,7 +9,12 @@
         {
             try
             {
-                var source = args[0];
+                var source = "SDRSharp_20230728_162452Z_153337654Hz_AF.wav";
+
+                if (args.Length > 0)
+                {
+                    source = args[0];
+                }
 
                 Console.WriteLine($"Source: {source}, press any key to process.");
 
@@ -48,15 +53,6 @@
 
                             decodes++;
                         });
-
-                pocsagManager.Pocsag512FilterDepth = 1;
-                pocsagManager.Pocsag1200FilterDepth = 1;
-                pocsagManager.Pocsag2400FilterDepth = 1;
-
-                //foreach (var sample in samples)
-                //{
-                //    pocsagManager.Process(sample);
-                //}
 
                 pocsagManager.Process(samples.ToArray());
 
