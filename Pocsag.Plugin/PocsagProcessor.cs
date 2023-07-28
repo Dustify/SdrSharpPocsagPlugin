@@ -2,6 +2,7 @@
 {
     using SDRSharp.Radio;
     using System;
+    using System.Runtime.InteropServices;
 
     public unsafe class PocsagProcessor : IRealProcessor
     {
@@ -32,10 +33,17 @@
         {
             try
             {
-                for (var i = 0; i < length; i++)
-                {
-                    this.Manager.Process(buffer[i]);
-                }
+                var source = new float[length];
+
+                Marshal.Copy((IntPtr)buffer, source, 0, length);
+
+                this.Manager.Process(source);
+                //for (var i = 0; i < length; i++)
+                //{
+                //    source[i] = buffer[i];
+
+                //    this.Manager.Process(buffer[i]);
+                //}
             }
             catch (Exception exception)
             {

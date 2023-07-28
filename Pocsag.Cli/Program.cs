@@ -9,9 +9,13 @@
         {
             try
             {
-                //var file = new NAudio.Wave.WaveFileReader("pocsag-short-2400.wav");
-                //var file = new NAudio.Wave.WaveFileReader("SDRSharp_20210407_174912Z_153350000Hz_AF.wav");
-                var file = new NAudio.Wave.WaveFileReader("POCSAG500_interference_tonyp.wav");
+                var source = args[0];
+
+                Console.WriteLine($"Source: {source}, press any key to process.");
+
+                Console.ReadKey(true);
+
+                var file = new NAudio.Wave.WaveFileReader(source);
 
                 var samples = new List<float>();
 
@@ -45,10 +49,16 @@
                             decodes++;
                         });
 
-                foreach (var sample in samples)
-                {
-                    pocsagManager.Process(sample);
-                }
+                pocsagManager.Pocsag512FilterDepth = 1;
+                pocsagManager.Pocsag1200FilterDepth = 1;
+                pocsagManager.Pocsag2400FilterDepth = 1;
+
+                //foreach (var sample in samples)
+                //{
+                //    pocsagManager.Process(sample);
+                //}
+
+                pocsagManager.Process(samples.ToArray());
 
                 Console.WriteLine($"Decodes: {decodes}");
             }
