@@ -10,9 +10,9 @@ namespace Pocsag
     internal class Fsk2Demodulator
     {
         private float baud;
-        private int samples_per_bit;
-        private int samples_per_bit_half;
-
+        private int samples_per_symbol;
+        private int samples_per_symbol_half;
+        private float error_per_symbol;
         private int lo_phase;
         private bool lo_state;
         private int zc_phase;
@@ -21,14 +21,21 @@ namespace Pocsag
 
         private float last_value;
         private bool output_state;
+        private float dec_error;
 
         public Fsk2Demodulator(float baud, float sampleRate)
         {
             this.baud = baud;
-            this.samples_per_bit = (int)Math.Round((float)sampleRate / baud);
-            this.samples_per_bit_half = (int)Math.Round((float)samples_per_bit / 2f);
 
-            this.fifo = new FixedSizeQueue<float>(samples_per_bit);
+            var samples_per_symbol_real = (float)sampleRate / baud;
+
+            this.samples_per_symbol = (int)Math.Round(samples_per_symbol_real);
+            this.samples_per_symbol_half = (int)Math.Round((float)samples_per_symbol / 2f);
+
+            this.error_per_symbol = samples_per_symbol_real - this.samples_per_symbol;
+
+
+            this.fifo = new FixedSizeQueue<float>(samples_per_symbol);
         }
 
         public bool[] Process(float[] values)
@@ -46,7 +53,7 @@ namespace Pocsag
 
                     if (lo_phase != 0)
                     {
-                        if (lo_phase >= samples_per_bit_half)
+                        if (lo_phase >= samples_per_symbol_half)
                         {
                             lo_phase++;
                         }
@@ -62,13 +69,26 @@ namespace Pocsag
                 lo_phase++;
                 zc_phase++;
 
-                if (lo_phase >= samples_per_bit)
+                if (lo_phase >= samples_per_symbol)
                 {
                     lo_phase = 0;
                     lo_state = !lo_state;
 
                     output_state = fifo._queue.Average() < 0;
                     result.Add(output_state);
+
+                    dec_error += error_per_symbol;
+
+                    if (this.dec_error >= 1f)
+                    {
+                        this.lo_phase--;
+                        this.dec_error -= 1f;
+                    }
+                    else if (this.dec_error <= 1f)
+                    {
+                        this.lo_phase++;
+                        this.dec_error += 1f;
+                    }
                 }
             }
 

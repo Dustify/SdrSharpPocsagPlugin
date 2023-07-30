@@ -9,7 +9,7 @@
         {
             try
             {
-                var source = "SDRSharp_20230728_162452Z_153337654Hz_AF.wav";
+                var source = "2400 001.wav";
 
                 if (args.Length > 0)
                 {
@@ -45,11 +45,13 @@
                         {
                             if (!message.IsValid)
                             {
+                                Console.Write("BAD DECODE\n---\n");
                                 return;
                             }
 
-                            Console.Write($"{message.Bps} {message.ErrorsCorrected} ");
-                            Console.WriteLine(message.Payload);
+                            Console.Write($"{message.FrameIndex} {message.Address} {message.Function} {message.Bps} {message.ErrorsCorrected}\n");
+                            Console.Write(message.Payload);
+                            Console.Write("\n---\n");
 
                             decodes++;
                         });
