@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Pocsag
 {
@@ -13,15 +14,30 @@ namespace Pocsag
         {
             this.bps = bps;
 
-            this.filter = new ChebyFilter(this.bps * 3f, 1f, this.sampleRate);
-            this.demodulator = new Fsk2Demodulator(this.bps, this.sampleRate);
+            // var pll = new PllPi(
+            //     sampleRate,
+            //     this.bps,
+            //     PllUpdateType.Both,
+            //     kP,
+            //     kI
+            // );
+
+
+            var pll = new PllDumb(
+                sampleRate,
+                this.bps,
+                PllUpdateType.Both
+            );
+
+            this.filter = new ChebyFilter(this.bps * 2f, 1f, this.sampleRate);
+            this.demodulator = new Fsk2Demodulator(this.bps, this.sampleRate, pll, true);
             this.decoder = new PocsagDecoder(Convert.ToUInt32(this.bps), messageReceived);
         }
 
-        public override void Process(float[] values)
+        public override void Process(float[] values, List<float> phase_errors = null, Action<float> writeSample = null)
         {
             var filtered = this.filter.Process(values);
-            var demodulated = this.demodulator.Process(filtered);
+            var demodulated = this.demodulator.Process(filtered, phase_errors, writeSample);
             this.decoder.Process(demodulated);
         }
     }

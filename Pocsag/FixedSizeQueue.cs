@@ -1,12 +1,9 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pocsag
 {
-    internal class FixedSizeQueue<T>
+
+    public class FixedSizeQueue<T>
     {
         public readonly List<T> _queue;
         private readonly int _limit;

@@ -33,7 +33,7 @@
         {
             try
             {
-                foreach(var chain in this.Chains)
+                foreach (var chain in this.Chains)
                 {
                     chain.Process(values);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Pocsag
 {
@@ -12,6 +13,6 @@ namespace Pocsag
             this.messageReceived = messageReceived;
         }
 
-        public abstract void Process(float[] values);
+        public abstract void Process(float[] values, List<float> phase_errors = null, Action<float> writeSample = null);
     }
 }
