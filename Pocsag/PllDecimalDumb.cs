@@ -1,8 +1,8 @@
 namespace Pocsag
 {
-    class PllDumb : PllBase
+    class PllDecimalDumb : PllDecimalBase
     {
-        public PllDumb(
+        public PllDecimalDumb(
             float sampleRate,
             float baud,
             PllUpdateType type) : base(
@@ -13,19 +13,19 @@ namespace Pocsag
         {
         }
 
-        protected override float GetAdjustment(float phaseError)
+        protected override decimal GetAdjustment(decimal phaseError)
         {
             if (phaseError > 0)
             {
-                return -this.phase_per_sample;
+                return +this.phase_per_sample;
             }
 
             if (phaseError < 0)
             {
-                return this.phase_per_sample;
+                return -this.phase_per_sample;
             }
 
-            return 0f;
+            return 0M;
         }
     }
 }

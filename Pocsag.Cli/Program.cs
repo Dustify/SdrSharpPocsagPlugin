@@ -45,8 +45,7 @@
                         {
                             if (!message.IsValid)
                             {
-                                Console.Write("BAD DECODE\n---\n");
-                                return;
+                                Console.Write("BAD DECODE:\n");
                             }
 
                             Console.Write($"{message.FrameIndex} {message.Address} {message.Function} {message.Bps} {message.ErrorsCorrected}\n");

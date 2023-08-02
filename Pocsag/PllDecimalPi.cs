@@ -1,21 +1,21 @@
 namespace Pocsag
 {
-    class PllPi : PllBase
+    class PllDecimalPi : PllDecimalBase
     {
-        private float kp;
-        private float ki;
-        private float ki_min;
-        private float ki_max;
-        private float integration_error;
+        private decimal kp;
+        private decimal ki;
+        private decimal ki_min;
+        private decimal ki_max;
+        private decimal integration_error;
 
-        public PllPi(
+        public PllDecimalPi(
             float sampleRate,
             float baud,
             PllUpdateType type,
-            float kP,
-            float kI,
-            float kIMin = float.MinValue,
-            float kIMax = float.MaxValue) : base(
+            decimal kP,
+            decimal kI,
+            decimal kIMin = decimal.MinValue,
+            decimal kIMax = decimal.MaxValue) : base(
             sampleRate,
             baud,
             type
@@ -27,7 +27,7 @@ namespace Pocsag
             this.ki_max = kIMax;
         }
 
-        protected override float GetAdjustment(float phaseError)
+        protected override decimal GetAdjustment(decimal phaseError)
         {
             this.integration_error += phaseError;
 

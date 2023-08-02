@@ -10,46 +10,49 @@ namespace Pocsag
         Both
     }
 
-    abstract class PllBase
+    abstract class PllDecimalBase
     {
         private PllUpdateType type;
 
-        protected float phase_per_sample;
-        private float lo_phase;
+        protected decimal phase_per_sample;
+        private decimal lo_phase;
         private bool lo_state;
         private float last_value;
-        private float phase_error;
+        private decimal phase_error;
 
 
-        public PllBase(float sampleRate, float baud, PllUpdateType type)
+        public PllDecimalBase(float sampleRate, float baud, PllUpdateType type)
         {
             this.type = type;
 
-            this.phase_per_sample = baud / sampleRate;
+            this.phase_per_sample = (decimal)baud / (decimal)sampleRate;
 
             if (this.type == PllUpdateType.Falling || this.type == PllUpdateType.Rising)
             {
-                this.phase_per_sample /= 2.0f;
+                this.phase_per_sample /= 2.0M;
             }
         }
 
-        protected abstract float GetAdjustment(float phaseError);
+        protected abstract decimal GetAdjustment(decimal phaseError);
 
         public bool Process(float value, List<float> phaseErrors = null, Action<float> writeSample = null)
         {
-            if (!this.lo_state && this.type == PllUpdateType.Falling && this.lo_phase >= 0.5f)
+            if (!this.lo_state && this.type == PllUpdateType.Falling && this.lo_phase >= 0.5M)
             {
                 this.lo_state = true;
             }
 
-            if (this.lo_state && this.type == PllUpdateType.Rising && this.lo_phase >= 0.5f)
+            if (this.lo_state && this.type == PllUpdateType.Rising && this.lo_phase >= 0.5M)
             {
                 this.lo_state = false;
             }
 
-            if (this.lo_phase >= 1f)
+            if (this.lo_phase >= 1M)
             {
-                this.lo_phase = 0f;
+                // var remainder = this.lo_phase - 1M;
+
+                // this.lo_phase = -remainder;
+                this.lo_phase = 0M;
 
                 switch (this.type)
                 {
@@ -84,9 +87,9 @@ namespace Pocsag
             {
                 this.phase_error = lo_phase;
 
-                if (this.phase_error > 0.5f)
+                if (this.phase_error > 0.5M)
                 {
-                    this.phase_error -= 1f;
+                    this.phase_error -= 1M;
                 }
 
                 var adjustment = this.GetAdjustment(this.phase_error);
@@ -96,13 +99,13 @@ namespace Pocsag
 
             if (phaseErrors != null)
             {
-                phaseErrors.Add(Math.Abs(phase_error));
+                phaseErrors.Add((float)Math.Abs(phase_error));
             }
 
             if (writeSample != null)
             {
                 writeSample(this.lo_state ? 1 : -1);
-                writeSample(this.phase_error);
+                writeSample((float)this.phase_error);
             }
 
             this.lo_phase += this.phase_per_sample;

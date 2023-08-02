@@ -8,11 +8,11 @@ namespace Pocsag
     {
         private FixedSizeQueue<float> value_fifo;
         private bool invert;
-        private PllBase pll;
+        private PllDecimalBase pll;
         private bool last_lo_state;
         private bool output_state;
 
-        public Fsk2Demodulator(float baud, float sampleRate, PllBase pll, bool invert)
+        public Fsk2Demodulator(float baud, float sampleRate, PllDecimalBase  pll, bool invert)
         {
             this.pll = pll;
 
@@ -28,7 +28,7 @@ namespace Pocsag
 
             for (var i = 0; i < values.Length; i++)
             {
-                if (i == 202563) {
+                if (i == 43363) {
 
                 }
 

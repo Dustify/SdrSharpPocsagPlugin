@@ -18,9 +18,9 @@
 
                 this.Chains = new List<ChainBase>
                 {
-                    new PocsagChain(512, this.SampleRate, messageReceived),
-                    new PocsagChain(1200, this.SampleRate, messageReceived),
-                    new PocsagChain(2400, this.SampleRate, messageReceived)
+                    new PocsagChain(512f, this.SampleRate, messageReceived),
+                    new PocsagChain(1200f, this.SampleRate, messageReceived),
+                    new PocsagChain(2400f, this.SampleRate, messageReceived)
                 };
             }
             catch (Exception exception)
