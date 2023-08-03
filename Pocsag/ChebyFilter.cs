@@ -11,6 +11,8 @@ namespace Pocsag
         private float b1;
         private float b2;
 
+        float x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+
         public ChebyFilter(float cutoffFrequency, float rippleDb, float sampleRate)
         {
             float Wc = (float)(Math.Tan(Math.PI * cutoffFrequency / sampleRate));
@@ -33,7 +35,7 @@ namespace Pocsag
         {
             // Initialize the filter state
             float[] filteredData = new float[inputArray.Length];
-            float x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+
 
             // Apply the filter
             for (int i = 0; i < inputArray.Length; i++)
