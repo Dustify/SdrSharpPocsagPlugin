@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
 
     public class Manager
     {
@@ -10,7 +9,7 @@
 
         public List<ChainBase> Chains { get; }
 
-        public Manager(int sampleRate, Action<PocsagMessage> messageReceived)
+        public Manager(int sampleRate, Action<MessageBase> messageReceived)
         {
             try
             {
@@ -20,7 +19,8 @@
                 {
                     new PocsagChain(512f, this.SampleRate, messageReceived),
                     new PocsagChain(1200f, this.SampleRate, messageReceived),
-                    new PocsagChain(2400f, this.SampleRate, messageReceived)
+                    new PocsagChain(2400f, this.SampleRate, messageReceived),
+                    new FlexChain(1600f, this.SampleRate, messageReceived)
                 };
             }
             catch (Exception exception)

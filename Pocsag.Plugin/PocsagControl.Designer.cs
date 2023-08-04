@@ -30,22 +30,19 @@ namespace Pocsag.Plugin
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             dataGridView1 = new System.Windows.Forms.DataGridView();
-            Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            FrameIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            Function = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            Bps = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            HasBchErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            HasParityErrorText = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            ErrorsCorrected = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
             checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
             checkBoxHideBad = new System.Windows.Forms.CheckBox();
             buttonClear = new System.Windows.Forms.Button();
             checkBoxMultiline = new System.Windows.Forms.CheckBox();
             toolTip1 = new System.Windows.Forms.ToolTip(components);
+            Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Protocol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Errors = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -57,93 +54,13 @@ namespace Pocsag.Plugin
             dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Timestamp, FrameIndex, Address, Function, Bps, HasBchErrorText, HasParityErrorText, ErrorsCorrected, Type, Payload });
+            dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Timestamp, Protocol, Address, Errors, Type, Payload });
             dataGridView1.Location = new System.Drawing.Point(0, 30);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowTemplate.Height = 25;
             dataGridView1.Size = new System.Drawing.Size(1418, 381);
             dataGridView1.TabIndex = 0;
-            // 
-            // Timestamp
-            // 
-            Timestamp.DataPropertyName = "TimestampText";
-            Timestamp.HeaderText = "Timestamp";
-            Timestamp.Name = "Timestamp";
-            Timestamp.ReadOnly = true;
-            Timestamp.Width = 91;
-            // 
-            // FrameIndex
-            // 
-            FrameIndex.DataPropertyName = "FrameIndex";
-            FrameIndex.HeaderText = "Frame Index";
-            FrameIndex.Name = "FrameIndex";
-            FrameIndex.ReadOnly = true;
-            FrameIndex.Width = 89;
-            // 
-            // Address
-            // 
-            Address.DataPropertyName = "Address";
-            Address.HeaderText = "Address";
-            Address.Name = "Address";
-            Address.ReadOnly = true;
-            Address.Width = 74;
-            // 
-            // Function
-            // 
-            Function.DataPropertyName = "Function";
-            Function.HeaderText = "Function";
-            Function.Name = "Function";
-            Function.ReadOnly = true;
-            Function.Width = 79;
-            // 
-            // Bps
-            // 
-            Bps.DataPropertyName = "Bps";
-            Bps.HeaderText = "BPS";
-            Bps.Name = "Bps";
-            Bps.ReadOnly = true;
-            Bps.Width = 52;
-            // 
-            // HasBchErrorText
-            // 
-            HasBchErrorText.DataPropertyName = "HasBchErrorText";
-            HasBchErrorText.HeaderText = "BCH Error(s)";
-            HasBchErrorText.Name = "HasBchErrorText";
-            HasBchErrorText.ReadOnly = true;
-            HasBchErrorText.Width = 89;
-            // 
-            // HasParityErrorText
-            // 
-            HasParityErrorText.DataPropertyName = "HasParityErrorText";
-            HasParityErrorText.HeaderText = "Parity Error(s)";
-            HasParityErrorText.Name = "HasParityErrorText";
-            HasParityErrorText.ReadOnly = true;
-            HasParityErrorText.Width = 95;
-            // 
-            // ErrorsCorrected
-            // 
-            ErrorsCorrected.DataPropertyName = "ErrorsCorrected";
-            ErrorsCorrected.HeaderText = "Errors Corrected";
-            ErrorsCorrected.Name = "ErrorsCorrected";
-            ErrorsCorrected.ReadOnly = true;
-            ErrorsCorrected.Width = 107;
-            // 
-            // Type
-            // 
-            Type.DataPropertyName = "TypeText";
-            Type.HeaderText = "Type";
-            Type.Name = "Type";
-            Type.ReadOnly = true;
-            Type.Width = 56;
-            // 
-            // Payload
-            // 
-            Payload.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            Payload.DataPropertyName = "Payload";
-            Payload.HeaderText = "Payload";
-            Payload.Name = "Payload";
-            Payload.ReadOnly = true;
             // 
             // checkBoxDeDuplicate
             // 
@@ -190,6 +107,56 @@ namespace Pocsag.Plugin
             // 
             toolTip1.AutomaticDelay = 0;
             // 
+            // Timestamp
+            // 
+            Timestamp.DataPropertyName = "TimestampText";
+            Timestamp.HeaderText = "Timestamp";
+            Timestamp.Name = "Timestamp";
+            Timestamp.ReadOnly = true;
+            Timestamp.Width = 91;
+            // 
+            // Protocol
+            // 
+            Protocol.DataPropertyName = "Protocol";
+            Protocol.HeaderText = "Protocol";
+            Protocol.Name = "Protocol";
+            Protocol.ReadOnly = true;
+            Protocol.Width = 77;
+            // 
+            // Address
+            // 
+            Address.DataPropertyName = "Address";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            Address.DefaultCellStyle = dataGridViewCellStyle1;
+            Address.HeaderText = "Address";
+            Address.Name = "Address";
+            Address.ReadOnly = true;
+            Address.Width = 74;
+            // 
+            // Errors
+            // 
+            Errors.DataPropertyName = "ErrorText";
+            Errors.HeaderText = "Error(s)";
+            Errors.Name = "Errors";
+            Errors.ReadOnly = true;
+            Errors.Width = 70;
+            // 
+            // Type
+            // 
+            Type.DataPropertyName = "TypeText";
+            Type.HeaderText = "Type";
+            Type.Name = "Type";
+            Type.ReadOnly = true;
+            Type.Width = 56;
+            // 
+            // Payload
+            // 
+            Payload.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            Payload.DataPropertyName = "Payload";
+            Payload.HeaderText = "Payload";
+            Payload.Name = "Payload";
+            Payload.ReadOnly = true;
+            // 
             // PocsagControl
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -214,13 +181,9 @@ namespace Pocsag.Plugin
         private System.Windows.Forms.CheckBox checkBoxMultiline;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Timestamp;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FrameIndex;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Protocol;
         private System.Windows.Forms.DataGridViewTextBoxColumn Address;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Function;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Bps;
-        private System.Windows.Forms.DataGridViewTextBoxColumn HasBchErrorText;
-        private System.Windows.Forms.DataGridViewTextBoxColumn HasParityErrorText;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ErrorsCorrected;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Errors;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
     }

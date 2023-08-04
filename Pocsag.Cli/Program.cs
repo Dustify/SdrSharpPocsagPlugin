@@ -9,7 +9,7 @@
         {
             try
             {
-                var source = "2400 001.wav";
+                var source = "Flex 1600 001.wav";
 
                 if (args.Length > 0)
                 {
@@ -41,14 +41,14 @@
                 var pocsagManager =
                     new Manager(
                         file.WaveFormat.SampleRate,
-                        (PocsagMessage message) =>
+                        (MessageBase message) =>
                         {
-                            if (!message.IsValid)
+                            if (!message.HasErrors)
                             {
                                 Console.Write("BAD DECODE:\n");
                             }
 
-                            Console.Write($"{message.FrameIndex} {message.Address} {message.Function} {message.Bps} {message.ErrorsCorrected}\n");
+                            Console.Write($"{message.Protocol} {message.Address}\n");
                             Console.Write(message.Payload);
                             Console.Write("\n---\n");
 

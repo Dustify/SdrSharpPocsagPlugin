@@ -9,17 +9,7 @@
     {
         public const uint Generator = 1897;
 
-        public bool HasParityError { get; private set; }
-
-        public string HasParityErrorText => this.HasParityError ? "Yes" : "No";
-
-        public bool HasBchError { get; private set; }
-
-        public string HasBchErrorText => this.HasBchError ? "Yes" : "No";
-
-        public bool IsValid => !this.HasBchError && !this.HasParityError;
-
-        public int ErrorsCorrected { get; private set; }
+        public List<bool> RawPayload { get; set; }
 
         public static readonly Dictionary<byte, char> NumericMapping =
             new Dictionary<byte, char>()
@@ -44,7 +34,8 @@
 
         public PocsagMessage(uint bps) : base(bps)
         {
-
+            this.RawPayload = new List<bool>();
+            this.Protocol = $"POCSAG / {bps}";
         }
 
         public bool IsBitPresent(uint source, int index)
@@ -106,13 +97,15 @@
         {
             try
             {
+                var errors = false;
+
                 if (this.CheckBchError(codeWord))
                 {
-                    this.HasBchError = true;
+                    errors = true;
 
                     // 1 bit error correction
 
-                    for (var i = 0; i < codeWord.Length - 1 && this.HasBchError; i++)
+                    for (var i = 0; i < codeWord.Length - 1 && this.HasErrors; i++)
                     {
                         var codeWordToCheck = (bool[])codeWord.Clone();
 
@@ -122,17 +115,17 @@
                         {
                             codeWord = codeWordToCheck;
 
-                            this.ErrorsCorrected++;
+                            //this.ErrorsCorrected++;
 
-                            this.HasBchError = false;
+                            errors = false;
                         }
                     }
 
                     // 2 bit error correction
 
-                    for (var x = 0; x < codeWord.Length - 1 && this.HasBchError; x++)
+                    for (var x = 0; x < codeWord.Length - 1 && this.HasErrors; x++)
                     {
-                        for (var y = 0; y < codeWord.Length - 1 && this.HasBchError; y++)
+                        for (var y = 0; y < codeWord.Length - 1 && this.HasErrors; y++)
                         {
                             if (x == y)
                             {
@@ -148,9 +141,9 @@
                             {
                                 codeWord = codeWordToCheck;
 
-                                this.ErrorsCorrected += 2;
+                                //this.ErrorsCorrected += 2;
 
-                                this.HasBchError = false;
+                                errors = false;
                             }
                         }
                     }
@@ -175,7 +168,7 @@
                     // parity should be zero (false)
                     if (parity != false)
                     {
-                        this.HasParityError = true;
+                        errors = true;
                     }
                 }
                 else
@@ -183,18 +176,26 @@
                     // parity should be one (true)
                     if (parity != true)
                     {
-                        this.HasParityError = true;
+                        errors = true;
                     }
                 }
+
+                if (!this.HasErrors && errors)
+                {
+                    this.HasErrors = true;
+                }
+
+                this.ErrorText = this.HasErrors ? "Yes" : "No";
 
                 // end parity check
 
                 if (codeWord[0] == false)
                 {
+                    var address = default(uint);
                     // address
-                    this.FrameIndex = frameIndex;
+                    //this.FrameIndex = frameIndex;
 
-                    this.Address += (uint)this.FrameIndex;
+                    address += (uint)frameIndex;
 
                     for (var i = 0; i < 18; i++)
                     {
@@ -202,9 +203,11 @@
 
                         if (data[i])
                         {
-                            this.Address += (uint)(1 << position);
+                            address += (uint)(1 << position);
                         }
                     }
+
+                    var function = default(byte);
 
                     for (var i = 18; i < 20; i++)
                     {
@@ -212,9 +215,11 @@
 
                         if (data[i])
                         {
-                            this.Function += (byte)(1 << position);
+                            function += (byte)(1 << position);
                         }
                     }
+
+                    this.Address = $"{address} / {function}";
                 }
                 else
                 {

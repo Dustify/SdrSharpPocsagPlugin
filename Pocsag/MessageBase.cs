@@ -1,7 +1,7 @@
 ﻿namespace Pocsag
 {
     using System;
-    using System.Collections.Generic;
+    using System.Security.Cryptography;
 
     public enum MessageType
     {
@@ -10,29 +10,27 @@
         Tone
     }
 
-    public abstract class MessageBase
+    public class MessageBase
     {
-        public DateTime Timestamp { get; }
+        public DateTime Timestamp { get; set; }
 
-        public int FrameIndex { get; protected set; }
+        public string Protocol { get; set; }
 
-        public UInt32 Address { get; protected set; }
+        public string TimestampText { get; set; }
 
-        public byte Function { get; protected set; }
+        public string Address { get; set; }
 
-        public string TimestampText => $"{this.Timestamp.ToShortDateString()} {this.Timestamp.ToLongTimeString()}";
+        public bool HasErrors { get; set; }
 
-        public bool HasData { get; protected set; }
+        public string ErrorText { get; set; }
 
-        public uint Bps { get; }
+        public bool HasData { get; set; }
 
-        public string Hash { get; private set; }
+        public string Hash { get; set; }
 
-        public List<bool> RawPayload { get; private set; }
+        public string Payload { get; set; }
 
-        public string Payload { get; protected set; }
-
-        public MessageType Type { get; protected set; }
+        public MessageType Type { get; set; }
 
         public string TypeText
         {
@@ -56,10 +54,8 @@
         {
             try
             {
-                this.Bps = bps;
-                this.RawPayload = new List<bool>();
-
                 this.Timestamp = DateTime.Now;
+                this.TimestampText = $"{this.Timestamp.ToShortDateString()} {this.Timestamp.ToLongTimeString()}";
             }
             catch (Exception exception)
             {
@@ -80,7 +76,7 @@
 
             var bytesToHash = System.Text.Encoding.ASCII.GetBytes(textToHash);
 
-            var sha256 = new System.Security.Cryptography.SHA256Managed();
+            var sha256 = SHA256.Create();
 
             var hashBytes = sha256.ComputeHash(bytesToHash);
 

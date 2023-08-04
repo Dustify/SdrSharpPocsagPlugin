@@ -6,9 +6,9 @@ namespace Pocsag
     public abstract class ChainBase
     {
         protected float sampleRate;
-        protected Action<PocsagMessage> messageReceived;
+        protected Action<MessageBase> messageReceived;
 
-        public ChainBase(float sampleRate, Action<PocsagMessage> messageReceived) {
+        public ChainBase(float sampleRate, Action<MessageBase> messageReceived) {
             this.sampleRate = sampleRate;
             this.messageReceived = messageReceived;
         }

@@ -15,7 +15,7 @@
         public PocsagSettings Settings { get; }
 
         private BindingSource bindingSource;
-        private BindingList<PocsagMessage> bindingList;
+        private BindingList<MessageBase> bindingList;
 
         protected DataGridViewColumn PayloadColumn => this.dataGridView1.Columns["Payload"];
 
@@ -41,7 +41,7 @@
             this.Settings = new PocsagSettings();
 
             this.bindingSource = new BindingSource();
-            this.bindingList = new BindingList<Pocsag.PocsagMessage>();
+            this.bindingList = new BindingList<MessageBase>();
 
             this.bindingSource.DataSource = this.bindingList;
 
@@ -50,7 +50,7 @@
             this.processor =
                 new PocsagProcessor(
                     this.control.AudioSampleRate,
-                    (Pocsag.PocsagMessage message) =>
+                    (MessageBase message) =>
                     {
                         this.MessageReceived(message);
                     });
@@ -97,12 +97,12 @@
             this.UpdateMultilineMode();
         }
 
-        private void MessageReceived(Pocsag.PocsagMessage message)
+        private void MessageReceived(MessageBase message)
         {
             if (this.InvokeRequired)
             {
                 this.BeginInvoke(
-                    new Action<Pocsag.PocsagMessage>(
+                    new Action<MessageBase>(
                         (message) =>
                         {
                             // skip duplicate messages
@@ -113,7 +113,7 @@
                                 return;
                             }
 
-                            if (this.Settings.HideBadDecodes && !message.IsValid)
+                            if (this.Settings.HideBadDecodes && message.HasErrors)
                             {
                                 return;
                             }
