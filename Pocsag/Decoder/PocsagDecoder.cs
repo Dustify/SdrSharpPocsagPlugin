@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pocsag.Message;
+using Pocsag.Support;
 
-namespace Pocsag
+namespace Pocsag.Decoder
 {
     internal class PocsagDecoder
     {
@@ -24,14 +26,14 @@ namespace Pocsag
         {
             try
             {
-                if (this.CurrentMessage != null &&
-                    this.CurrentMessage.HasData)
+                if (CurrentMessage != null &&
+                    CurrentMessage.HasData)
                 {
-                    this.CurrentMessage.ProcessPayload();
-                    this.messageReceived(this.CurrentMessage);
+                    CurrentMessage.ProcessPayload();
+                    messageReceived(CurrentMessage);
                 }
 
-                this.CurrentMessage = new PocsagMessage(this.bps);
+                CurrentMessage = new PocsagMessage(bps);
             }
             catch (Exception exception)
             {
@@ -44,19 +46,19 @@ namespace Pocsag
             this.bps = bps;
             this.messageReceived = messageReceived;
 
-            this.BitBuffer = new List<bool>();
+            BitBuffer = new List<bool>();
 
-            while (this.BitBuffer.Count < 32)
+            while (BitBuffer.Count < 32)
             {
-                this.BitBuffer.Add(false);
+                BitBuffer.Add(false);
             }
 
-            this.BatchIndex = -1;
-            this.FrameIndex = -1;
-            this.CodeWordInFrameIndex = -1;
-            this.CodeWordPosition = -1;
+            BatchIndex = -1;
+            FrameIndex = -1;
+            CodeWordInFrameIndex = -1;
+            CodeWordPosition = -1;
 
-            this.QueueCurrentMessage();
+            QueueCurrentMessage();
         }
 
         private uint GetBufferValue()
@@ -65,7 +67,7 @@ namespace Pocsag
 
             try
             {
-                var buffer = this.BitBuffer.ToArray();
+                var buffer = BitBuffer.ToArray();
 
                 for (var i = 0; i < buffer.Length; i++)
                 {
@@ -90,65 +92,65 @@ namespace Pocsag
                 bufferValue == 0b01010101010101010101010101010101)
             {
                 // reset these until we see batch sync 
-                this.BatchIndex = -1;
-                this.FrameIndex = -1;
-                this.CodeWordInFrameIndex = -1;
-                this.CodeWordPosition = -1;
+                BatchIndex = -1;
+                FrameIndex = -1;
+                CodeWordInFrameIndex = -1;
+                CodeWordPosition = -1;
             }
 
-            if (this.BatchIndex > -1 &&
-                this.FrameIndex > -1 &&
-                this.CodeWordInFrameIndex > -1 &&
-                this.CodeWordPosition > -1)
+            if (BatchIndex > -1 &&
+                FrameIndex > -1 &&
+                CodeWordInFrameIndex > -1 &&
+                CodeWordPosition > -1)
             {
-                this.CodeWordPosition++;
+                CodeWordPosition++;
 
-                if (this.CodeWordPosition > 31)
+                if (CodeWordPosition > 31)
                 {
-                    this.CodeWordPosition = 0;
-                    this.CodeWordInFrameIndex++;
+                    CodeWordPosition = 0;
+                    CodeWordInFrameIndex++;
 
                     // idle
                     if (bufferValue == 0b01111010100010011100000110010111)
                     {
-                        this.QueueCurrentMessage();
+                        QueueCurrentMessage();
                     }
                     else
                     {
                         // address code word? queue current message and start new message
-                        if (this.BitBuffer[0] == false)
+                        if (BitBuffer[0] == false)
                         {
-                            this.QueueCurrentMessage();
+                            QueueCurrentMessage();
                         }
 
-                        this.CurrentMessage.AppendCodeWord(
-                            this.BitBuffer.ToArray(),
-                            this.FrameIndex);
+                        CurrentMessage.AppendCodeWord(
+                            BitBuffer.ToArray(),
+                            FrameIndex);
                     }
 
-                    if (this.CodeWordInFrameIndex > 1)
+                    if (CodeWordInFrameIndex > 1)
                     {
-                        this.CodeWordInFrameIndex = 0;
-                        this.FrameIndex++;
+                        CodeWordInFrameIndex = 0;
+                        FrameIndex++;
                     }
                 }
 
                 // doing this allows us to wait for batch sync below
-                if (this.FrameIndex > 7)
+                if (FrameIndex > 7)
                 {
-                    this.FrameIndex = -1;
-                    this.CodeWordInFrameIndex = -1;
-                    this.CodeWordPosition = -1;
+                    FrameIndex = -1;
+                    CodeWordInFrameIndex = -1;
+                    CodeWordPosition = -1;
                 }
             }
 
             // batch sync
             if (bufferValue == 0b01111100110100100001010111011000)
             {
-                this.BatchIndex++;
-                this.FrameIndex = 0;
-                this.CodeWordPosition = 0;
-                this.CodeWordInFrameIndex = 0;
+                BatchIndex++;
+                FrameIndex = 0;
+                CodeWordPosition = 0;
+                CodeWordInFrameIndex = 0;
             }
         }
 
@@ -156,16 +158,16 @@ namespace Pocsag
         {
             foreach (var bit in bits)
             {
-                this.BitBuffer.Add(bit);
+                BitBuffer.Add(bit);
 
-                while (this.BitBuffer.Count > 32)
+                while (BitBuffer.Count > 32)
                 {
-                    this.BitBuffer.RemoveAt(0);
+                    BitBuffer.RemoveAt(0);
                 }
 
-                var bufferValue = this.GetBufferValue();
+                var bufferValue = GetBufferValue();
 
-                this.BufferUpdated(bufferValue);
+                BufferUpdated(bufferValue);
             }
         }
     }

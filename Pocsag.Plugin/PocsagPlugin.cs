@@ -1,5 +1,6 @@
 ﻿namespace Pocsag.Plugin
 {
+    using Pocsag.Support;
     using SDRSharp.Common;
     using System;
     using System.Windows.Forms;

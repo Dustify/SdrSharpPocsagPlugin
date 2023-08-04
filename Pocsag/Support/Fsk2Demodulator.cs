@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Pocsag
+namespace Pocsag.Support
 {
     internal class Fsk2Demodulator
     {
@@ -12,13 +12,13 @@ namespace Pocsag
         private bool last_lo_state;
         private bool output_state;
 
-        public Fsk2Demodulator(float baud, float sampleRate, PllDecimalBase  pll, bool invert)
+        public Fsk2Demodulator(float baud, float sampleRate, PllDecimalBase pll, bool invert)
         {
             this.pll = pll;
 
             var samples_per_symbol = (int)Math.Round(sampleRate / baud);
 
-            this.value_fifo = new FixedSizeQueue<float>(samples_per_symbol);
+            value_fifo = new FixedSizeQueue<float>(samples_per_symbol);
             this.invert = invert;
         }
 
@@ -28,18 +28,19 @@ namespace Pocsag
 
             for (var i = 0; i < values.Length; i++)
             {
-                if (i == 43363) {
+                if (i == 43363)
+                {
 
                 }
 
                 var value = values[i];
                 value_fifo.Enqueue(value);
 
-                var lo_state = this.pll.Process(value, phaseErrors, writeSample);
+                var lo_state = pll.Process(value, phaseErrors, writeSample);
 
                 if (lo_state != last_lo_state)
                 {
-                    this.output_state = value_fifo._queue.Average() >= 0;
+                    output_state = value_fifo._queue.Average() >= 0;
                     result.Add(invert ? !output_state : output_state);
                 }
 
@@ -48,7 +49,7 @@ namespace Pocsag
                     writeSample(output_state ? 1f : -1f);
                 }
 
-                this.last_lo_state = lo_state;
+                last_lo_state = lo_state;
             }
 
             return result.ToArray();

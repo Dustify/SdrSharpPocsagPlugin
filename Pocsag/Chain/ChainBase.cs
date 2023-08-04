@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pocsag.Message;
 
-namespace Pocsag
+namespace Pocsag.Chain
 {
     public abstract class ChainBase
     {
         protected float sampleRate;
         protected Action<MessageBase> messageReceived;
 
-        public ChainBase(float sampleRate, Action<MessageBase> messageReceived) {
+        public ChainBase(float sampleRate, Action<MessageBase> messageReceived)
+        {
             this.sampleRate = sampleRate;
             this.messageReceived = messageReceived;
         }

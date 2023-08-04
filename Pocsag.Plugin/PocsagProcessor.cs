@@ -1,5 +1,7 @@
 ﻿namespace Pocsag.Plugin
 {
+    using Pocsag.Message;
+    using Pocsag.Support;
     using SDRSharp.Radio;
     using System;
     using System.Runtime.InteropServices;

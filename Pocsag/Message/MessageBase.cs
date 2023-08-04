@@ -1,7 +1,8 @@
-﻿namespace Pocsag
+﻿namespace Pocsag.Message
 {
     using System;
     using System.Security.Cryptography;
+    using Pocsag.Support;
 
     public enum MessageType
     {
@@ -36,7 +37,7 @@
         {
             get
             {
-                switch (this.Type)
+                switch (Type)
                 {
                     case MessageType.AlphaNumeric:
                         return "Alpha";
@@ -54,8 +55,8 @@
         {
             try
             {
-                this.Timestamp = DateTime.Now;
-                this.TimestampText = $"{this.Timestamp.ToShortDateString()} {this.Timestamp.ToLongTimeString()}";
+                Timestamp = DateTime.Now;
+                TimestampText = $"{Timestamp.ToShortDateString()} {Timestamp.ToLongTimeString()}";
             }
             catch (Exception exception)
             {
@@ -65,7 +66,7 @@
 
         protected void UpdateHash()
         {
-            var textToHash = this.Payload;
+            var textToHash = Payload;
 
             // skip first 9 characters, typically contains time / date + another number which will mess up duplicate detection
 
@@ -83,7 +84,7 @@
             sha256.Dispose();
             sha256 = null;
 
-            this.Hash = BitConverter.ToString(hashBytes).Replace("-", "");
+            Hash = BitConverter.ToString(hashBytes).Replace("-", "");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Pocsag
+﻿namespace Pocsag.Support
 {
     using System;
     using System.IO;

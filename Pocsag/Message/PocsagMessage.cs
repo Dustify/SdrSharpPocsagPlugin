@@ -1,9 +1,10 @@
-﻿namespace Pocsag
+﻿namespace Pocsag.Message
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Pocsag.Support;
 
     public class PocsagMessage : MessageBase
     {
@@ -34,13 +35,13 @@
 
         public PocsagMessage(uint bps) : base(bps)
         {
-            this.RawPayload = new List<bool>();
-            this.Protocol = $"POCSAG / {bps}";
+            RawPayload = new List<bool>();
+            Protocol = $"POCSAG / {bps}";
         }
 
         public bool IsBitPresent(uint source, int index)
         {
-            return (source & (1 << index)) > 0;
+            return (source & 1 << index) > 0;
         }
 
         public bool CheckBchError(bool[] codeWord)
@@ -65,21 +66,21 @@
             for (var i = 30; i >= 0; i--)
             {
                 // if bit is set then do xor
-                if (this.IsBitPresent(remainder, i))
+                if (IsBitPresent(remainder, i))
                 {
                     for (var x = 0; x < 11; x++)
                     {
                         var position = i - x;
 
-                        var currentValue = this.IsBitPresent(remainder, position);
-                        var generatorValue = this.IsBitPresent(Generator, 10 - x);
+                        var currentValue = IsBitPresent(remainder, position);
+                        var generatorValue = IsBitPresent(Generator, 10 - x);
 
                         var xorResult = currentValue ^ generatorValue;
 
                         if (xorResult)
                         {
                             // set bit
-                            remainder |= ((uint)1 << position);
+                            remainder |= (uint)1 << position;
                         }
                         else
                         {
@@ -99,19 +100,19 @@
             {
                 var errors = false;
 
-                if (this.CheckBchError(codeWord))
+                if (CheckBchError(codeWord))
                 {
                     errors = true;
 
                     // 1 bit error correction
 
-                    for (var i = 0; i < codeWord.Length - 1 && this.HasErrors; i++)
+                    for (var i = 0; i < codeWord.Length - 1 && HasErrors; i++)
                     {
                         var codeWordToCheck = (bool[])codeWord.Clone();
 
                         codeWordToCheck[i] = !codeWordToCheck[i];
 
-                        if (!this.CheckBchError(codeWordToCheck))
+                        if (!CheckBchError(codeWordToCheck))
                         {
                             codeWord = codeWordToCheck;
 
@@ -123,9 +124,9 @@
 
                     // 2 bit error correction
 
-                    for (var x = 0; x < codeWord.Length - 1 && this.HasErrors; x++)
+                    for (var x = 0; x < codeWord.Length - 1 && HasErrors; x++)
                     {
-                        for (var y = 0; y < codeWord.Length - 1 && this.HasErrors; y++)
+                        for (var y = 0; y < codeWord.Length - 1 && HasErrors; y++)
                         {
                             if (x == y)
                             {
@@ -137,7 +138,7 @@
                             codeWordToCheck[x] = !codeWordToCheck[x];
                             codeWordToCheck[y] = !codeWordToCheck[y];
 
-                            if (!this.CheckBchError(codeWordToCheck))
+                            if (!CheckBchError(codeWordToCheck))
                             {
                                 codeWord = codeWordToCheck;
 
@@ -149,7 +150,7 @@
                     }
                 }
 
-                this.HasData = true;
+                HasData = true;
 
                 var data = new bool[20];
 
@@ -180,12 +181,12 @@
                     }
                 }
 
-                if (!this.HasErrors && errors)
+                if (!HasErrors && errors)
                 {
-                    this.HasErrors = true;
+                    HasErrors = true;
                 }
 
-                this.ErrorText = this.HasErrors ? "Yes" : "No";
+                ErrorText = HasErrors ? "Yes" : "No";
 
                 // end parity check
 
@@ -219,12 +220,12 @@
                         }
                     }
 
-                    this.Address = $"{address} / {function}";
+                    Address = $"{address} / {function}";
                 }
                 else
                 {
                     // message
-                    this.RawPayload.AddRange(data);
+                    RawPayload.AddRange(data);
                 }
             }
             catch (Exception exception)
@@ -239,14 +240,14 @@
             {
                 var result = string.Empty;
 
-                var byteCount = (int)Math.Floor(this.RawPayload.Count / 7.0);
+                var byteCount = (int)Math.Floor(RawPayload.Count / 7.0);
 
                 for (var i = 0; i < byteCount; i++)
                 {
                     var position = i * 7;
 
                     var currentBits =
-                        this.RawPayload.
+                        RawPayload.
                         Skip(position).
                         Take(7);
 
@@ -262,18 +263,18 @@
                     }
                 }
 
-                this.Payload = result;
+                Payload = result;
 
                 var numericResult = string.Empty;
 
-                var numericByteCount = (int)Math.Floor(this.RawPayload.Count / 4.0);
+                var numericByteCount = (int)Math.Floor(RawPayload.Count / 4.0);
 
                 for (var i = 0; i < numericByteCount; i++)
                 {
                     var position = i * 4;
 
                     var currentBits =
-                       this.RawPayload.
+                       RawPayload.
                        Skip(position).
                        Take(4);
 
@@ -286,20 +287,20 @@
                     numericResult += NumericMapping[byteArray[0]];
                 }
 
-                this.Type = MessageType.AlphaNumeric;
+                Type = MessageType.AlphaNumeric;
 
                 if (numericResult.Length == 0)
                 {
-                    this.Payload = "";
-                    this.Type = MessageType.Tone;
+                    Payload = "";
+                    Type = MessageType.Tone;
                 }
                 else if (numericResult.Length < 16)
                 {
-                    this.Payload = $"{numericResult} (ALPHA: {this.Payload})";
-                    this.Type = MessageType.Numeric;
+                    Payload = $"{numericResult} (ALPHA: {Payload})";
+                    Type = MessageType.Numeric;
                 }
 
-                this.UpdateHash();
+                UpdateHash();
             }
             catch (Exception exception)
             {

@@ -5,6 +5,7 @@
     using System.ComponentModel;
     using System.Windows.Forms;
     using System.Linq;
+    using Pocsag.Message;
 
     public partial class PocsagControl : UserControl
     {

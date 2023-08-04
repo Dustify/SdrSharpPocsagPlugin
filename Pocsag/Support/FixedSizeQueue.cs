@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Pocsag
+namespace Pocsag.Support
 {
 
     public class FixedSizeQueue<T>

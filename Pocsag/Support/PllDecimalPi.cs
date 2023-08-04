@@ -1,4 +1,4 @@
-namespace Pocsag
+namespace Pocsag.Support
 {
     class PllDecimalPi : PllDecimalBase
     {
@@ -21,26 +21,26 @@ namespace Pocsag
             type
             )
         {
-            this.kp = kP;
-            this.ki = kI;
-            this.ki_min = kIMin;
-            this.ki_max = kIMax;
+            kp = kP;
+            ki = kI;
+            ki_min = kIMin;
+            ki_max = kIMax;
         }
 
         protected override decimal GetAdjustment(decimal phaseError)
         {
-            this.integration_error += phaseError;
+            integration_error += phaseError;
 
-            if (this.integration_error > this.ki_max)
+            if (integration_error > ki_max)
             {
-                this.integration_error = this.ki_max;
+                integration_error = ki_max;
             }
-            else if (this.integration_error < this.ki_min)
+            else if (integration_error < ki_min)
             {
-                this.integration_error = this.ki_min;
+                integration_error = ki_min;
             }
 
-            var adjustment = (phaseError * this.kp) + (this.integration_error * this.ki);
+            var adjustment = phaseError * kp + integration_error * ki;
 
             return adjustment;
         }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Pocsag.Decoder;
+using Pocsag.Message;
+using Pocsag.Support;
 
-namespace Pocsag
+namespace Pocsag.Chain
 {
     internal class PocsagChain : ChainBase
     {
@@ -21,34 +24,27 @@ namespace Pocsag
               this.baud,
               PllUpdateType.Both,
               kP,
-              kI
-              ,
+              kI,
               -10M,
               +10M
             );
 
-            //     var pll = new PllDecimalDumb(
-            //       sampleRate,
-            //       this.bps,
-            //       PllUpdateType.Both
-            //   );
-
-            this.filter = new ChebyFilter(this.baud, 1f, this.sampleRate);
-            this.demodulator = new Fsk2Demodulator(this.baud, this.sampleRate, pll, true);
-            this.decoder = new PocsagDecoder(Convert.ToUInt32(this.baud), messageReceived);
+            filter = new ChebyFilter(this.baud, 1f, this.sampleRate);
+            demodulator = new Fsk2Demodulator(this.baud, this.sampleRate, pll, true);
+            decoder = new PocsagDecoder(Convert.ToUInt32(this.baud), messageReceived);
         }
 
         public override void Process(float[] values, List<float> phase_errors = null, Action<float> writeSample = null)
         {
             var filtered_values = values;
 
-            if (!this.DISABLE_FILTER)
+            if (!DISABLE_FILTER)
             {
-                filtered_values = this.filter.Process(values);
+                filtered_values = filter.Process(values);
             }
 
-            var demodulated = this.demodulator.Process(filtered_values, phase_errors, writeSample);
-            this.decoder.Process(demodulated);
+            var demodulated = demodulator.Process(filtered_values, phase_errors, writeSample);
+            decoder.Process(demodulated);
         }
     }
 }

@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using Pocsag.Message;
+    using Pocsag.Support;
 
     class Program
     {

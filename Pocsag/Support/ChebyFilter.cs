@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pocsag
+namespace Pocsag.Support
 {
     internal class ChebyFilter
     {
@@ -15,7 +15,7 @@ namespace Pocsag
 
         public ChebyFilter(float cutoffFrequency, float rippleDb, float sampleRate)
         {
-            float Wc = (float)(Math.Tan(Math.PI * cutoffFrequency / sampleRate));
+            float Wc = (float)Math.Tan(Math.PI * cutoffFrequency / sampleRate);
 
             // Calculate filter coefficients
             float epsilon = (float)Math.Sqrt(Math.Pow(10, rippleDb / 10) - 1);
@@ -23,12 +23,12 @@ namespace Pocsag
             float k1 = (float)Math.Sinh(v);
             float k2 = (float)Math.Cosh(v);
 
-            this.a0 = 1 + 2 * k1 * Wc + Wc * Wc;
-            this.a1 = 2 * (Wc * Wc - 1);
-            this.a2 = 1 - 2 * k1 * Wc + Wc * Wc;
-            this.b0 = Wc * Wc;
-            this.b1 = 2 * Wc * Wc;
-            this.b2 = Wc * Wc;
+            a0 = 1 + 2 * k1 * Wc + Wc * Wc;
+            a1 = 2 * (Wc * Wc - 1);
+            a2 = 1 - 2 * k1 * Wc + Wc * Wc;
+            b0 = Wc * Wc;
+            b1 = 2 * Wc * Wc;
+            b2 = Wc * Wc;
         }
 
         public float[] Process(float[] inputArray)

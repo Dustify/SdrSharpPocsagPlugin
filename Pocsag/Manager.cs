@@ -2,6 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using Pocsag.Chain;
+    using Pocsag.Message;
+    using Pocsag.Support;
 
     public class Manager
     {
@@ -20,7 +23,8 @@
                     new PocsagChain(512f, this.SampleRate, messageReceived),
                     new PocsagChain(1200f, this.SampleRate, messageReceived),
                     new PocsagChain(2400f, this.SampleRate, messageReceived),
-                    new FlexChain(1600f, this.SampleRate, messageReceived)
+                    new FlexChain(1600f, this.SampleRate, messageReceived),
+                    new FlexChain(3200f, this.SampleRate, messageReceived),
                 };
             }
             catch (Exception exception)

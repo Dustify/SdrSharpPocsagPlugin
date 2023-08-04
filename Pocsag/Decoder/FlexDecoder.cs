@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Pocsag.Message;
+using Pocsag.Support;
 
-namespace Pocsag
+namespace Pocsag.Decoder
 {
     internal class FlexDecoder
     {
@@ -26,11 +28,11 @@ namespace Pocsag
             this.bps = bps;
             this.messageReceived = messageReceived;
 
-            this.BitBuffer = new List<bool>();
+            BitBuffer = new List<bool>();
 
-            while (this.BitBuffer.Count < 32)
+            while (BitBuffer.Count < 32)
             {
-                this.BitBuffer.Add(false);
+                BitBuffer.Add(false);
             }
         }
 
@@ -40,7 +42,7 @@ namespace Pocsag
 
             try
             {
-                var buffer = this.BitBuffer.ToArray();
+                var buffer = BitBuffer.ToArray();
 
                 for (var i = 0; i < buffer.Length; i++)
                 {
@@ -75,7 +77,7 @@ namespace Pocsag
             if (inv_a_rx && counter == 32)
             {
                 var message =
-                    new MessageBase(this.bps)
+                    new FlexMessage(bps)
                     {
                         Payload = Convert.ToString(bufferValue, 2),
                         Hash = DateTime.Now.ToString(),
@@ -83,11 +85,10 @@ namespace Pocsag
                         HasData = true,
                         Address = "",
                         ErrorText = "",
-                        HasErrors = false,
-                        Protocol = $"FLEX / {this.bps}"
+                        HasErrors = false
                     };
 
-                this.messageReceived(message);
+                messageReceived(message);
 
                 inv_a_rx = false;
                 counter = 0;
@@ -98,16 +99,16 @@ namespace Pocsag
         {
             foreach (var bit in bits)
             {
-                this.BitBuffer.Add(bit);
+                BitBuffer.Add(bit);
 
-                while (this.BitBuffer.Count > 32)
+                while (BitBuffer.Count > 32)
                 {
-                    this.BitBuffer.RemoveAt(0);
+                    BitBuffer.RemoveAt(0);
                 }
 
-                var bufferValue = this.GetBufferValue();
+                var bufferValue = GetBufferValue();
 
-                this.BufferUpdated(bufferValue);
+                BufferUpdated(bufferValue);
             }
         }
     }
