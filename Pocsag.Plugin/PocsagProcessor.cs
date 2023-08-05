@@ -1,7 +1,6 @@
-﻿namespace Pocsag.Plugin
+﻿namespace SdrsDecoder.Plugin
 {
-    using Pocsag.Message;
-    using Pocsag.Support;
+    using SdrsDecoder.Support;
     using SDRSharp.Radio;
     using System;
     using System.Runtime.InteropServices;

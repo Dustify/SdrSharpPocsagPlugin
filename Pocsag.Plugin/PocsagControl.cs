@@ -1,11 +1,11 @@
-﻿namespace Pocsag.Plugin
+﻿namespace SdrsDecoder.Plugin
 {
     using SDRSharp.Common;
     using System;
     using System.ComponentModel;
     using System.Windows.Forms;
     using System.Linq;
-    using Pocsag.Message;
+    using SdrsDecoder.Support;
 
     public partial class PocsagControl : UserControl
     {

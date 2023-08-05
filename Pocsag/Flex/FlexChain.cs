@@ -1,10 +1,8 @@
-﻿using System;
+﻿using SdrsDecoder.Support;
+using System;
 using System.Collections.Generic;
-using Pocsag.Decoder;
-using Pocsag.Message;
-using Pocsag.Support;
 
-namespace Pocsag.Chain
+namespace SdrsDecoder.Flex
 {
     internal class FlexChain : ChainBase
     {
@@ -30,7 +28,7 @@ namespace Pocsag.Chain
             );
 
             filter = new ChebyFilter(this.baud, 1f, this.sampleRate);
-            demodulator = new Fsk2Demodulator(this.baud, this.sampleRate, pll, true);
+            demodulator = new Fsk2Demodulator(this.baud, this.sampleRate, pll, false);
             decoder = new FlexDecoder(Convert.ToUInt32(this.baud), messageReceived);
         }
 

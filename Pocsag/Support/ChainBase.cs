@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Pocsag.Message;
 
-namespace Pocsag.Chain
+namespace SdrsDecoder.Support
 {
     public abstract class ChainBase
     {

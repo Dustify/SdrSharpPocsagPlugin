@@ -1,4 +1,4 @@
-﻿namespace Pocsag.Plugin
+﻿namespace SdrsDecoder.Plugin
 {
     using SDRSharp.Radio;
     using System;

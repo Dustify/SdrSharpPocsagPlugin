@@ -1,10 +1,10 @@
-﻿namespace Pocsag.Message
+﻿namespace SdrsDecoder.Pocsag
 {
+    using SdrsDecoder.Support;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using Pocsag.Support;
 
     public class PocsagMessage : MessageBase
     {

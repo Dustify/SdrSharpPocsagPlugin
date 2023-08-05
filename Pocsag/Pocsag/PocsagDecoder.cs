@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Pocsag.Message;
-using Pocsag.Support;
+using  SdrsDecoder.Support;
 
-namespace Pocsag.Decoder
+namespace SdrsDecoder.Pocsag
 {
     internal class PocsagDecoder
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Pocsag.Support
+namespace SdrsDecoder.Support
 {
 
     public class FixedSizeQueue<T>

@@ -1,6 +1,6 @@
-﻿namespace Pocsag.Plugin
+﻿namespace SdrsDecoder.Plugin
 {
-    using Pocsag.Support;
+    using  SdrsDecoder.Support;
     using SDRSharp.Common;
     using System;
     using System.Windows.Forms;
@@ -32,7 +32,7 @@
             }
         }
 
-        public string DisplayName => "POCSAG Decoder";
+        public string DisplayName => "Decoder";
 
         public void Close()
         {

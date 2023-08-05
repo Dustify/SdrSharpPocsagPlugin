@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Pocsag.Decoder;
-using Pocsag.Message;
-using Pocsag.Support;
+using  SdrsDecoder.Support;
 
-namespace Pocsag.Chain
+namespace SdrsDecoder.Pocsag
 {
     internal class PocsagChain : ChainBase
     {

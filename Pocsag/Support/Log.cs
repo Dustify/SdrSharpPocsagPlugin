@@ -1,4 +1,4 @@
-﻿namespace Pocsag.Support
+﻿namespace SdrsDecoder.Support
 {
     using System;
     using System.IO;

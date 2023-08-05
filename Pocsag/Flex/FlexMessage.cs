@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using  SdrsDecoder.Support;
 
-namespace Pocsag.Message
+namespace SdrsDecoder.Flex
 {
     internal class FlexMessage : MessageBase
     {
         public FlexMessage(uint bps) : base(bps)
         {
-            this.Protocol = $"FLEX / {bps} / 2";
+            Protocol = $"FLEX / {bps} / 2";
 
-            this.Hash = DateTime.Now.ToString();
-            this.Type = MessageType.AlphaNumeric;
+            Hash = DateTime.Now.ToString();
+            Type = MessageType.AlphaNumeric;
         }
     }
 }

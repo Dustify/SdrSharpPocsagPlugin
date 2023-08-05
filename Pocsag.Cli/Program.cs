@@ -1,9 +1,8 @@
-﻿namespace Pocsag.Cli
+﻿namespace SdrsDecoder.Cli
 {
     using System;
     using System.Collections.Generic;
-    using Pocsag.Message;
-    using Pocsag.Support;
+    using SdrsDecoder.Support;
 
     class Program
     {

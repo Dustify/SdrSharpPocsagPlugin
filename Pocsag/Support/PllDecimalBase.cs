@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Pocsag.Support
+namespace SdrsDecoder.Support
 {
     enum PllUpdateType
     {

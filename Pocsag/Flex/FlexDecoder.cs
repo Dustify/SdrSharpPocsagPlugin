@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using Pocsag.Message;
-using Pocsag.Support;
+using  SdrsDecoder.Support;
 
-namespace Pocsag.Decoder
+namespace SdrsDecoder.Flex
 {
     internal class FlexDecoder
     {
@@ -14,14 +13,47 @@ namespace Pocsag.Decoder
         const uint A2 = 0b10000100111001110101100100111001;
         const uint A3 = 0b01001111100101110101100100111001;
         const uint A4 = 0b00100001010111110101100100111001;
-        //const uint A5 = 
+        const uint A5 = 0b11011101010010110101100100111001;
+        const uint A6 = 0b00010110001110110101100100111001;
+        const uint A7 = 0b10110011100000110101100100111001;
+        const uint Ar = 0b11001011001000000101100100111001;
 
+        const uint B = 0b0101010101010101;
+        // frame info
+
+        const uint BS2 = 0b1010;
+        const uint C = 0b1110110110000100;
+
+        Dictionary<uint, string> FlexMagicValues = new Dictionary<uint, string>
+        {
+            { BS1, nameof(BS1) },
+            { A1, nameof(A1) },
+            { A2, nameof(A2) },
+            { A3, nameof(A3) },
+            { A4, nameof(A4) },
+            { A5, nameof(A5) },
+            { A6, nameof(A6) },
+            { A7, nameof(A7) },
+            { Ar, nameof(Ar) },
+            { B, nameof(B) },
+            { ~A1, nameof(A1) + "I" },
+            { ~A2, nameof(A2) + "I" },
+            { ~A3, nameof(A3) + "I" },
+            { ~A4, nameof(A4) + "I" },
+            { ~A5, nameof(A5) + "I" },
+            { ~A6, nameof(A6) + "I" },
+            { ~A7, nameof(A7) + "I" },
+            { ~Ar, nameof(Ar) + "I" },
+            { BS2, nameof(BS2) },
+            { C, nameof(C) },
+            { ~BS2, nameof(BS2) + "I" },
+            { ~C, nameof(C) + "I" },
+    };
 
         public List<bool> BitBuffer { get; }
 
         private uint bps;
         private Action<MessageBase> messageReceived;
-
 
         public FlexDecoder(uint bps, Action<MessageBase> messageReceived)
         {
@@ -65,21 +97,12 @@ namespace Pocsag.Decoder
 
         public void BufferUpdated(uint bufferValue)
         {
-            counter++;
-
-            if (!inv_a_rx && bufferValue == 0b10000111000011001010011011000110)
-            {
-                inv_a_rx = true;
-                counter = 0;
-                return;
-            }
-
-            if (inv_a_rx && counter == 32)
+            if (FlexMagicValues.ContainsKey(bufferValue))
             {
                 var message =
                     new FlexMessage(bps)
                     {
-                        Payload = Convert.ToString(bufferValue, 2),
+                        Payload = FlexMagicValues[bufferValue],
                         Hash = DateTime.Now.ToString(),
                         Type = MessageType.AlphaNumeric,
                         HasData = true,
@@ -89,9 +112,6 @@ namespace Pocsag.Decoder
                     };
 
                 messageReceived(message);
-
-                inv_a_rx = false;
-                counter = 0;
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pocsag.Support
+namespace SdrsDecoder.Support
 {
     internal class ChebyFilter
     {

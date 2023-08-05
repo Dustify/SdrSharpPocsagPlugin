@@ -1,5 +1,5 @@
 ﻿
-namespace Pocsag.Plugin
+namespace SdrsDecoder.Plugin
 {
     partial class PocsagControl
     {

@@ -1,8 +1,7 @@
-﻿namespace Pocsag.Message
+﻿namespace SdrsDecoder.Support
 {
     using System;
     using System.Security.Cryptography;
-    using Pocsag.Support;
 
     public enum MessageType
     {
