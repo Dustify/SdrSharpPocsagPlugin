@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using  SdrsDecoder.Support;
+using SdrsDecoder.Support;
 
 namespace SdrsDecoder.Flex
 {

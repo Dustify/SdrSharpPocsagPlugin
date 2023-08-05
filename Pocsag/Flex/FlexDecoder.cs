@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using  SdrsDecoder.Support;
+using SdrsDecoder.Support;
 
 namespace SdrsDecoder.Flex
 {

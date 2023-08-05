@@ -1,6 +1,6 @@
 ﻿namespace SdrsDecoder.Plugin
 {
-    using  SdrsDecoder.Support;
+    using SdrsDecoder.Support;
     using SDRSharp.Common;
     using System;
     using System.Windows.Forms;
