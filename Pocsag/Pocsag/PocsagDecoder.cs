@@ -16,7 +16,9 @@ namespace SdrsDecoder.Pocsag
 
         public PocsagMessage CurrentMessage { get; private set; }
 
-        public List<bool> BitBuffer { get; }
+        //public List<bool> BitBuffer { get; }
+
+        public BitBuffer Buffer { get; set; } = new BitBuffer();
 
         private uint bps;
         private Action<PocsagMessage> messageReceived;
@@ -45,12 +47,12 @@ namespace SdrsDecoder.Pocsag
             this.bps = bps;
             this.messageReceived = messageReceived;
 
-            BitBuffer = new List<bool>();
+            //BitBuffer = new List<bool>();
 
-            while (BitBuffer.Count < 32)
-            {
-                BitBuffer.Add(false);
-            }
+            //while (BitBuffer.Count < 32)
+            //{
+            //    BitBuffer.Add(false);
+            //}
 
             BatchIndex = -1;
             FrameIndex = -1;
@@ -60,29 +62,29 @@ namespace SdrsDecoder.Pocsag
             QueueCurrentMessage();
         }
 
-        private uint GetBufferValue()
-        {
-            var result = default(uint);
+        //private uint GetBufferValue()
+        //{
+        //    var result = default(uint);
 
-            try
-            {
-                var buffer = BitBuffer.ToArray();
+        //    try
+        //    {
+        //        var buffer = BitBuffer.ToArray();
 
-                for (var i = 0; i < buffer.Length; i++)
-                {
-                    if (buffer[i])
-                    {
-                        result += (uint)(1 << buffer.Length - i - 1);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                Log.LogException(exception);
-            }
+        //        for (var i = 0; i < buffer.Length; i++)
+        //        {
+        //            if (buffer[i])
+        //            {
+        //                result += (uint)(1 << buffer.Length - i - 1);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception exception)
+        //    {
+        //        Log.LogException(exception);
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         public void BufferUpdated(uint bufferValue)
         {
@@ -117,13 +119,13 @@ namespace SdrsDecoder.Pocsag
                     else
                     {
                         // address code word? queue current message and start new message
-                        if (BitBuffer[0] == false)
+                        if (this.Buffer.Buffer[0] == false)
                         {
                             QueueCurrentMessage();
                         }
 
                         CurrentMessage.AppendCodeWord(
-                            BitBuffer.ToArray(),
+                            this.Buffer.Buffer.ToArray(),
                             FrameIndex);
                     }
 
@@ -157,14 +159,15 @@ namespace SdrsDecoder.Pocsag
         {
             foreach (var bit in bits)
             {
-                BitBuffer.Add(bit);
+                this.Buffer.Process(bit);
+                //BitBuffer.Add(bit);
 
-                while (BitBuffer.Count > 32)
-                {
-                    BitBuffer.RemoveAt(0);
-                }
+                //while (BitBuffer.Count > 32)
+                //{
+                //    BitBuffer.RemoveAt(0);
+                //}
 
-                var bufferValue = GetBufferValue();
+                var bufferValue = this.Buffer.GetValue();
 
                 BufferUpdated(bufferValue);
             }

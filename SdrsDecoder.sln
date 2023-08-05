@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31112.23
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pocsag", "Pocsag\Pocsag.csproj", "{5D18619C-8809-4199-9227-242977AC0E68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SdrsDecoder", "Pocsag\SdrsDecoder.csproj", "{5D18619C-8809-4199-9227-242977AC0E68}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pocsag.Cli", "Pocsag.Cli\Pocsag.Cli.csproj", "{721CF5F9-D91B-4DA1-9EE3-98D13FD64E01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SdrsDecoder.Cli", "Pocsag.Cli\SdrsDecoder.Cli.csproj", "{721CF5F9-D91B-4DA1-9EE3-98D13FD64E01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pocsag.Plugin", "Pocsag.Plugin\Pocsag.Plugin.csproj", "{EF369083-14DE-4F60-8090-FFC7958192C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SdrsDecoder.Plugin", "Pocsag.Plugin\SdrsDecoder.Plugin.csproj", "{EF369083-14DE-4F60-8090-FFC7958192C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
