@@ -274,10 +274,8 @@ namespace SdrsDecoder.Flex
                                Type = ExtractUint(value, 25, 27)
                            };
 
-                        uint length = 0;
-                        uint start = 0;
-
                         var isAlpha = false;
+                        var isNum = false;
 
                         // switch to static dict?
                         switch (vector.Type)
@@ -294,9 +292,11 @@ namespace SdrsDecoder.Flex
                                 break;
                             case 3:
                                 vector.TypeText = "STD NUM";
+                                isNum = true;
                                 break;
                             case 4:
                                 vector.TypeText = "SFM NUM";
+                                isNum = true;
                                 break;
                             case 5:
                                 vector.TypeText = "ALPHA";
@@ -307,6 +307,7 @@ namespace SdrsDecoder.Flex
                                 break;
                             case 7:
                                 vector.TypeText = "NUM NUM";
+                                //isNum = true;
                                 break;
                         }
 
@@ -321,8 +322,8 @@ namespace SdrsDecoder.Flex
 
                         if (isAlpha)
                         {
-                            length = ExtractUint(value, 11, 17);
-                            start = ExtractUint(value, 18, 24);
+                            var length = ExtractUint(value, 11, 17);
+                            var start = ExtractUint(value, 18, 24);
 
                             var message = "";
 
@@ -407,19 +408,56 @@ namespace SdrsDecoder.Flex
                                     ErrorText = errors ? "Yes" : "No"
                                 }
                             );
+
+                            continue;
                         }
-                        else
+
+                        if (isNum)
                         {
-                            this.messageReceived(
-                                new FlexMessage(1600)
+                            var length = ExtractUint(value, 15, 17);
+                            var start = ExtractUint(value, 18, 24);
+
+                            for (var x = (int)start; x < start + length; x++)
+                            {
+                                if (x > this.Words.Count - 1)
                                 {
-                                    Address = relevantAddress.ToString(),
-                                    Payload = $"Vector: {vector.TypeText} S: {start} L: {length}",
-                                    HasErrors = errors,
-                                    ErrorText = errors ? "Yes" : "No"
+                                    // something has gone wrong!
+                                    break;
                                 }
-                                );
+
+                                var messageResult = this.Words[x];
+
+                                if (messageResult.ParityError || messageResult.BchErrors)
+                                {
+                                    errors = true;
+                                }
+
+                                var messageValue = this.Words[x].Value;
+
+                                // header
+                                if (x == start)
+                                {
+
+
+                                    var check = ExtractUint(messageValue, 30, 31);
+
+                                    continue;
+                                }
+                            }
+
+                            continue;
                         }
+
+                        this.messageReceived(
+                            new FlexMessage(1600)
+                            {
+                                Address = relevantAddress.ToString(),
+                                Payload = $"Vector: {vector.TypeText}",
+                                HasErrors = errors,
+                                ErrorText = errors ? "Yes" : "No"
+                            }
+                        );
+
 
                         continue;
                     }
