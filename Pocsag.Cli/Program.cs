@@ -10,7 +10,7 @@
         {
             try
             {
-                var source = "Flex 1600 001.wav";
+                var source = "flex.wav";
 
                 if (args.Length > 0)
                 {
@@ -44,7 +44,7 @@
                         file.WaveFormat.SampleRate,
                         (MessageBase message) =>
                         {
-                            if (!message.HasErrors)
+                            if (message.HasErrors)
                             {
                                 Console.Write("BAD DECODE:\n");
                             }

@@ -11,6 +11,7 @@
         public const uint Generator = 1897;
 
         public List<bool> RawPayload { get; set; }
+        public int ErrorsCorrected { get; private set; }
 
         public static readonly Dictionary<byte, char> NumericMapping =
             new Dictionary<byte, char>()
@@ -106,7 +107,7 @@
 
                     // 1 bit error correction
 
-                    for (var i = 0; i < codeWord.Length - 1 && HasErrors; i++)
+                    for (var i = 0; i < codeWord.Length - 1 && errors; i++)
                     {
                         var codeWordToCheck = (bool[])codeWord.Clone();
 
@@ -116,7 +117,7 @@
                         {
                             codeWord = codeWordToCheck;
 
-                            //this.ErrorsCorrected++;
+                            this.ErrorsCorrected++;
 
                             errors = false;
                         }
@@ -124,9 +125,9 @@
 
                     // 2 bit error correction
 
-                    for (var x = 0; x < codeWord.Length - 1 && HasErrors; x++)
+                    for (var x = 0; x < codeWord.Length - 1 && errors; x++)
                     {
-                        for (var y = 0; y < codeWord.Length - 1 && HasErrors; y++)
+                        for (var y = 0; y < codeWord.Length - 1 && errors; y++)
                         {
                             if (x == y)
                             {
@@ -142,7 +143,7 @@
                             {
                                 codeWord = codeWordToCheck;
 
-                                //this.ErrorsCorrected += 2;
+                                this.ErrorsCorrected += 2;
 
                                 errors = false;
                             }
@@ -186,7 +187,7 @@
                     HasErrors = true;
                 }
 
-                ErrorText = HasErrors ? "Yes" : "No";
+                ErrorText = HasErrors ? $"Yes ({this.ErrorsCorrected})" : $"No ({this.ErrorsCorrected})";
 
                 // end parity check
 

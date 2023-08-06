@@ -23,10 +23,11 @@ namespace SdrsDecoder.Flex
 
         const uint BS2 = 0b1010;
         const uint C = 0b1110110110000100;
+        const uint BS2I = BS2 ^ 0b1111;
+        const uint CI = C ^ 0b1111111111111111;
 
-        Dictionary<uint, string> FlexMagicValues = new Dictionary<uint, string>
+        Dictionary<uint, string> FlexAValues = new Dictionary<uint, string>
         {
-            { BS1, nameof(BS1) },
             { A1, nameof(A1) },
             { A2, nameof(A2) },
             { A3, nameof(A3) },
@@ -34,8 +35,11 @@ namespace SdrsDecoder.Flex
             { A5, nameof(A5) },
             { A6, nameof(A6) },
             { A7, nameof(A7) },
-            { Ar, nameof(Ar) },
-            { B, nameof(B) },
+            { Ar, nameof(Ar) }
+        };
+
+        Dictionary<uint, string> FlexAIValues = new Dictionary<uint, string>
+        {
             { ~A1, nameof(A1) + "I" },
             { ~A2, nameof(A2) + "I" },
             { ~A3, nameof(A3) + "I" },
@@ -43,92 +47,183 @@ namespace SdrsDecoder.Flex
             { ~A5, nameof(A5) + "I" },
             { ~A6, nameof(A6) + "I" },
             { ~A7, nameof(A7) + "I" },
-            { ~Ar, nameof(Ar) + "I" },
-            { BS2, nameof(BS2) },
-            { C, nameof(C) },
-            { ~BS2, nameof(BS2) + "I" },
-            { ~C, nameof(C) + "I" },
-    };
+            { ~Ar, nameof(Ar) + "I" }
+        };
 
-        public List<bool> BitBuffer { get; }
+        public BitBuffer Buffer { get; set; } = new BitBuffer();
 
         private uint bps;
         private Action<MessageBase> messageReceived;
+        public FlexFrame Frame;
 
         public FlexDecoder(uint bps, Action<MessageBase> messageReceived)
         {
             this.bps = bps;
             this.messageReceived = messageReceived;
 
-            BitBuffer = new List<bool>();
-
-            while (BitBuffer.Count < 32)
-            {
-                BitBuffer.Add(false);
-            }
+            this.Frame = new FlexFrame(messageReceived);
         }
 
-        private uint GetBufferValue()
+        public int Counter = 0;
+
+        public void BufferUpdated()
         {
-            var result = default(uint);
+            var value_32 = this.Buffer.GetValue(32);
 
-            try
+            //if (value_32 == BS1)
+            //{
+            //    this.Frame.State = FrameState.SYNC1_A;
+
+            //    return;
+            //}
+
+            if (this.Frame.State == FrameState.SYNC1_A && FlexAValues.ContainsKey(value_32))
             {
-                var buffer = BitBuffer.ToArray();
-
-                for (var i = 0; i < buffer.Length; i++)
+                switch (FlexAValues[value_32])
                 {
-                    if (buffer[i])
-                    {
-                        result += (uint)(1 << buffer.Length - i - 1);
-                    }
+                    case "A1":
+                        this.Frame.Level = FlexLevel.F1600_2;
+                        break;
+                    case "A2":
+                        this.Frame.Level = FlexLevel.F3200_2;
+                        break;
+                    case "A3":
+                        this.Frame.Level = FlexLevel.F3200_4;
+                        break;
+                    case "A4":
+                        this.Frame.Level = FlexLevel.F6400_4;
+                        break;
                 }
+
+                this.Frame.State = FrameState.SYNC1_B;
+
+                return;
             }
-            catch (Exception exception)
+
+            if (this.Frame.State == FrameState.SYNC1_AI && FlexAIValues.ContainsKey(value_32))
             {
-                Log.LogException(exception);
+                switch (FlexAIValues[value_32])
+                {
+                    case "A1I":
+                        this.Frame.Level = FlexLevel.F1600_2;
+                        break;
+                    case "A2I":
+                        this.Frame.Level = FlexLevel.F3200_2;
+                        break;
+                    case "A3I":
+                        this.Frame.Level = FlexLevel.F3200_4;
+                        break;
+                    case "A4I":
+                        this.Frame.Level = FlexLevel.F6400_4;
+                        break;
+                }
+
+                this.Frame.State = FrameState.FIW;
+                this.Counter = 0;
             }
 
-            return result;
-        }
+            var value_16 = this.Buffer.GetValue(16);
+            var value_4 = this.Buffer.GetValue(4);
 
-        bool inv_a_rx = false;
-        uint counter = 0;
-
-        public void BufferUpdated(uint bufferValue)
-        {
-            if (FlexMagicValues.ContainsKey(bufferValue))
+            switch (this.Frame.State)
             {
-                var message =
-                    new FlexMessage(bps)
+                case FrameState.SYNC1_B:
+                    if (value_16 == B)
                     {
-                        Payload = FlexMagicValues[bufferValue],
-                        Hash = DateTime.Now.ToString(),
-                        Type = MessageType.AlphaNumeric,
-                        HasData = true,
-                        Address = "",
-                        ErrorText = "",
-                        HasErrors = false
-                    };
+                        this.Frame.State = FrameState.SYNC1_AI;
+                    }
+                    break;
 
-                messageReceived(message);
+                case FrameState.FIW:
+                    if (this.Counter < 32)
+                    {
+                        break;
+                    }
+
+                    this.Frame.ProcessFiw(value_32);
+                    this.Frame.State = FrameState.SYNC2_BS2;
+
+                    break;
+
+                case FrameState.SYNC2_BS2:
+                    {
+                        if (value_4 == BS2)
+                        {
+                            this.Frame.State = FrameState.SYNC2_C;
+                            //this.messageReceived(new FlexMessage(1600) { Payload = $"SYNC2_BS2" });
+                        }
+
+                        break;
+                    }
+
+                case FrameState.SYNC2_C:
+                    {
+                        if (value_16 == C)
+                        {
+                            this.Frame.State = FrameState.SYNC2_BS2I;
+                            //this.messageReceived(new FlexMessage(1600) { Payload = $"SYNC2_C" });
+                        }
+
+                        break;
+                    }
+
+                case FrameState.SYNC2_BS2I:
+                    {
+                        if (value_4 == BS2I)
+                        {
+                            this.Frame.State = FrameState.SYNC2_CI;
+                            //this.messageReceived(new FlexMessage(1600) { Payload = $"SYNC2_BS2I" });
+                        }
+
+                        break;
+                    }
+
+                case FrameState.SYNC2_CI:
+                    {
+                        if (value_16 == CI)
+                        {
+                            this.Frame.State = FrameState.BLOCK;
+                            this.Counter = 0;
+                        }
+
+                        break;
+                    }
+
+                case FrameState.BLOCK:
+
+                    if (this.Counter < 32)
+                    {
+                        break;
+                    }
+
+                    this.Counter = 0;
+                    this.Frame.ProcessWord(value_32);
+
+                    if (this.Frame.IsIdle)
+                    {
+                        this.Frame = new FlexFrame(this.messageReceived);
+                    }
+
+                    if (this.Frame.BlocksComplete)
+                    {
+                        this.Frame = new FlexFrame(this.messageReceived);
+
+                        //this.messageReceived(new FlexMessage(1600) { Payload = $"BLOCK RESET" });
+                    }
+
+                    break;
             }
+
+            this.Counter++;
         }
 
         public void Process(bool[] bits)
         {
             foreach (var bit in bits)
             {
-                BitBuffer.Add(bit);
+                this.Buffer.Process(bit);
 
-                while (BitBuffer.Count > 32)
-                {
-                    BitBuffer.RemoveAt(0);
-                }
-
-                var bufferValue = GetBufferValue();
-
-                BufferUpdated(bufferValue);
+                this.BufferUpdated();
             }
         }
     }

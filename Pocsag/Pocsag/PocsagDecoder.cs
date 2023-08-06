@@ -16,8 +16,6 @@ namespace SdrsDecoder.Pocsag
 
         public PocsagMessage CurrentMessage { get; private set; }
 
-        //public List<bool> BitBuffer { get; }
-
         public BitBuffer Buffer { get; set; } = new BitBuffer();
 
         private uint bps;
@@ -47,13 +45,6 @@ namespace SdrsDecoder.Pocsag
             this.bps = bps;
             this.messageReceived = messageReceived;
 
-            //BitBuffer = new List<bool>();
-
-            //while (BitBuffer.Count < 32)
-            //{
-            //    BitBuffer.Add(false);
-            //}
-
             BatchIndex = -1;
             FrameIndex = -1;
             CodeWordInFrameIndex = -1;
@@ -61,30 +52,6 @@ namespace SdrsDecoder.Pocsag
 
             QueueCurrentMessage();
         }
-
-        //private uint GetBufferValue()
-        //{
-        //    var result = default(uint);
-
-        //    try
-        //    {
-        //        var buffer = BitBuffer.ToArray();
-
-        //        for (var i = 0; i < buffer.Length; i++)
-        //        {
-        //            if (buffer[i])
-        //            {
-        //                result += (uint)(1 << buffer.Length - i - 1);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        Log.LogException(exception);
-        //    }
-
-        //    return result;
-        //}
 
         public void BufferUpdated(uint bufferValue)
         {
@@ -160,13 +127,7 @@ namespace SdrsDecoder.Pocsag
             foreach (var bit in bits)
             {
                 this.Buffer.Process(bit);
-                //BitBuffer.Add(bit);
-
-                //while (BitBuffer.Count > 32)
-                //{
-                //    BitBuffer.RemoveAt(0);
-                //}
-
+  
                 var bufferValue = this.Buffer.GetValue();
 
                 BufferUpdated(bufferValue);
