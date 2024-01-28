@@ -2,7 +2,7 @@
 
 namespace SdrsDecoder.Support
 {
-    struct BchResult
+    public struct BchResult
     {
         public uint Value;
         public bool BchErrors;
@@ -10,7 +10,7 @@ namespace SdrsDecoder.Support
         public int Corrected;
     }
 
-    internal class Bch
+    public class Bch
     {
         public const uint Generator = 1897;
 

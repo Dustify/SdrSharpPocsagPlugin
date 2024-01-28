@@ -2,7 +2,7 @@
 
 namespace SdrsDecoder.Support
 {
-    internal class ChebyFilter
+    public class ChebyFilter
     {
         private float a0;
         private float a1;

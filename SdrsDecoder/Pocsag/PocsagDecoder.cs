@@ -4,7 +4,7 @@ using SdrsDecoder.Support;
 
 namespace SdrsDecoder.Pocsag
 {
-    internal class PocsagDecoder
+    public class PocsagDecoder
     {
         public int BatchIndex { get; private set; }
 

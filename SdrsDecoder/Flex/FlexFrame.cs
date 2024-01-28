@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SdrsDecoder.Flex
 {
-    enum FrameState
+    public enum FrameState
     {
         SYNC1_BS1,
         SYNC1_A,
@@ -19,7 +19,7 @@ namespace SdrsDecoder.Flex
         BLOCK
     }
 
-    enum FlexLevel
+    public enum FlexLevel
     {
         UNKNOWN,
         F1600_2,
@@ -28,7 +28,7 @@ namespace SdrsDecoder.Flex
         F6400_4
     }
 
-    struct FlexAddress
+    public struct FlexAddress
     {
         public bool Short;
         public BchResult Result;
@@ -43,7 +43,7 @@ namespace SdrsDecoder.Flex
         public string TypeText;
     }
 
-    internal class FlexFrame
+    public class FlexFrame
     {
         public uint CycleIndex { get; set; } = 0;
 

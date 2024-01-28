@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SdrsDecoder.Support
 {
-    internal class BitBuffer
+    public class BitBuffer
     {
         public List<bool> Buffer = new List<bool>();
 

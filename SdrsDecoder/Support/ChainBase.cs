@@ -14,6 +14,6 @@ namespace SdrsDecoder.Support
             this.messageReceived = messageReceived;
         }
 
-        public abstract void Process(float[] values, List<float> phase_errors = null, Action<float> writeSample = null);
+        public abstract void Process(float[] values, Action<float> writeSample = null);
     }
 }

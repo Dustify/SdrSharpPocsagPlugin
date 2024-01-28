@@ -5,7 +5,7 @@ using SdrsDecoder.Support;
 
 namespace SdrsDecoder.Flex
 {
-    internal class FlexDecoder
+    public class FlexDecoder
     {
         const uint BS1 = 0b10101010101010101010101010101010;
 

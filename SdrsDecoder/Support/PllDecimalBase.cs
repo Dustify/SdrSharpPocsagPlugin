@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace SdrsDecoder.Support
 {
-    enum PllUpdateType
+    public enum PllUpdateType
     {
         Rising,
         Falling,
         Both
     }
 
-    abstract class PllDecimalBase
+    public abstract class PllDecimalBase : PllBase
     {
         private PllUpdateType type;
 
@@ -35,7 +35,7 @@ namespace SdrsDecoder.Support
 
         protected abstract decimal GetAdjustment(decimal phaseError);
 
-        public bool Process(float value, List<float> phaseErrors = null, Action<float> writeSample = null)
+        public override bool Process(float value, Action<float> writeSample = null)
         {
             if (!lo_state && type == PllUpdateType.Falling && lo_phase >= 0.5M)
             {
@@ -95,11 +95,6 @@ namespace SdrsDecoder.Support
                 var adjustment = GetAdjustment(phase_error);
 
                 lo_phase -= adjustment;
-            }
-
-            if (phaseErrors != null)
-            {
-                phaseErrors.Add((float)Math.Abs(phase_error));
             }
 
             if (writeSample != null)

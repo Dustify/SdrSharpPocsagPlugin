@@ -7,7 +7,7 @@ using SdrsDecoder.Support;
 
 namespace SdrsDecoder.Flex
 {
-    internal class FlexMessage : MessageBase
+    public class FlexMessage : MessageBase
     {
         public FlexMessage(uint bps) : base(bps)
         {

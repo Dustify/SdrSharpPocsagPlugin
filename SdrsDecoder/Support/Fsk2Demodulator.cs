@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace SdrsDecoder.Support
 {
-    internal class Fsk2Demodulator
+    public class Fsk2Demodulator
     {
         private FixedSizeQueue<float> value_fifo;
         private bool invert;
-        private PllDecimalBase pll;
+        private PllBase pll;
         private bool last_lo_state;
         private bool output_state;
 
-        public Fsk2Demodulator(float baud, float sampleRate, PllDecimalBase pll, bool invert)
+        public Fsk2Demodulator(float baud, float sampleRate, PllBase pll, bool invert)
         {
             this.pll = pll;
 
@@ -22,13 +22,13 @@ namespace SdrsDecoder.Support
             this.invert = invert;
         }
 
-        public bool[] Process(float[] values, List<float> phaseErrors = null, Action<float> writeSample = null)
+        public bool[] Process(float[] values, Action<float> writeSample = null)
         {
             var result = new List<bool>();
 
             for (var i = 0; i < values.Length; i++)
             {
-                if (i == 43363)
+                if (i == 7744)
                 {
 
                 }
@@ -36,7 +36,7 @@ namespace SdrsDecoder.Support
                 var value = values[i];
                 value_fifo.Enqueue(value);
 
-                var lo_state = pll.Process(value, phaseErrors, writeSample);
+                var lo_state = pll.Process(value, writeSample);
 
                 if (lo_state != last_lo_state)
                 {

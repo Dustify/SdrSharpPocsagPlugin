@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pocsag\SdrsDecoder.csproj" />
+    <ProjectReference Include="..\SdrsDecoder\SdrsDecoder.csproj" />
   </ItemGroup>
 
   <ItemGroup>
