@@ -52,8 +52,15 @@ namespace SdrsDecoder.Pocsag
             QueueCurrentMessage();
         }
 
+        private int timeout = 0;
+
         public void BufferUpdated(uint bufferValue)
         {
+            if (timeout >= 64 && this.CurrentMessage != null && this.CurrentMessage.HasData)
+            {
+                this.QueueCurrentMessage();
+            }
+
             // preamble
             if (bufferValue == 0b10101010101010101010101010101010 ||
                 bufferValue == 0b01010101010101010101010101010101)
@@ -63,6 +70,8 @@ namespace SdrsDecoder.Pocsag
                 FrameIndex = -1;
                 CodeWordInFrameIndex = -1;
                 CodeWordPosition = -1;
+
+                timeout = 0;
             }
 
             if (BatchIndex > -1 &&
@@ -70,6 +79,8 @@ namespace SdrsDecoder.Pocsag
                 CodeWordInFrameIndex > -1 &&
                 CodeWordPosition > -1)
             {
+                timeout = 0;
+
                 CodeWordPosition++;
 
                 if (CodeWordPosition > 31)
@@ -114,11 +125,15 @@ namespace SdrsDecoder.Pocsag
             // batch sync
             if (bufferValue == 0b01111100110100100001010111011000)
             {
+                timeout = 0;
+
                 BatchIndex++;
                 FrameIndex = 0;
                 CodeWordPosition = 0;
                 CodeWordInFrameIndex = 0;
             }
+
+            timeout++;
         }
 
         public void Process(bool[] bits)
@@ -126,7 +141,7 @@ namespace SdrsDecoder.Pocsag
             foreach (var bit in bits)
             {
                 this.Buffer.Process(bit);
-  
+
                 var bufferValue = this.Buffer.GetValue();
 
                 BufferUpdated(bufferValue);
