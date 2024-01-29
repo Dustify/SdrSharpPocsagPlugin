@@ -12,7 +12,7 @@
         {
             try
             {
-                var source = "raw.wav";
+                var source = "SDRSharp_20210414_211225Z_156150138Hz_AF.wav";
 
                 if (args.Length > 0)
                 {
@@ -38,12 +38,10 @@
 
                     var s = frame[0];
 
-                    s -= 0.3f;
-
                     samples.Add(s);
                 }
 
-                var baud = 1200;
+                var baud = 512;
 
                 //var sr = file.WaveFormat.SampleRate;
 
@@ -74,7 +72,7 @@
                 //    }
                 //}
 
-                
+
                 //var dsr = isr / d;
 
                 //var decim = new Decimator(d);
@@ -88,13 +86,22 @@
                 //    }
                 //}
 
+                var messageCount = 0f;
+                var successCount = 0f;
+
                 var chain = new PocsagChain(
                     baud,
                     file.WaveFormat.SampleRate,
                     (message) =>
                     {
-                        Console.WriteLine(message.Payload);
+                        messageCount += 1;
 
+                        if (!message.HasErrors)
+                        {
+                            successCount += 1;
+                        }
+
+                        Console.WriteLine(message.ErrorText + (message.HasErrors ? "" : " " + message.TypeText + " " + message.Payload));
                     });
 
                 var debug = new List<float>();
@@ -102,7 +109,9 @@
 
                 chain.Process(samples.ToArray(), writeSample: ws);
 
-                using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(12000, 4)))
+                Console.WriteLine($"{successCount} / {messageCount} = {successCount / messageCount * 100}%");
+
+                using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(chain.Rv.dsr, 4)))
                 {
                     foreach (var ss in debug.ToArray())
                     {
@@ -117,7 +126,7 @@
             }
 
             Console.WriteLine("Done.");
-            //Console.ReadKey(true);
+            Console.ReadKey(true);
         }
     }
 }

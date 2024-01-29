@@ -11,15 +11,17 @@ namespace SdrsDecoder.Pocsag
         private Interpolator interpolator;
         private Decimator decimator;
 
+        public ResampleValues Rv { get; private set; }
+
         public PocsagChain(float baud, float sampleRate, Action<MessageBase> messageReceived) : base(sampleRate, messageReceived)
         {
-            var rv = GetResampleValues(baud, sampleRate);
-            var pll = new Pll(rv.dsr, baud);
+            this.Rv = GetResampleValues(baud, sampleRate);
+            var pll = new Pll(Rv.dsr, baud);
 
-            interpolator = new Interpolator(rv.i);
-            filter = new ChebyFilter(baud, 1f, rv.isr);
-            decimator = new Decimator(rv.d);
-            demodulator = new Fsk2Demodulator(baud, rv.dsr, pll, true);
+            interpolator = new Interpolator(Rv.i);
+            filter = new ChebyFilter(baud, 1f, Rv.isr);
+            decimator = new Decimator(Rv.d);
+            demodulator = new Fsk2Demodulator(baud, Rv.dsr, pll, true);
             decoder = new PocsagDecoder(Convert.ToUInt32(baud), messageReceived);
         }
 
