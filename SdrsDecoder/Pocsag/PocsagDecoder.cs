@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using SdrsDecoder.Support;
+﻿using SdrsDecoder.Support;
+using System;
 
 namespace SdrsDecoder.Pocsag
 {
