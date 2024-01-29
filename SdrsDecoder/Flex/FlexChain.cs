@@ -1,6 +1,7 @@
 ﻿using SdrsDecoder.Support;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace SdrsDecoder.Flex
 {
@@ -20,21 +21,19 @@ namespace SdrsDecoder.Flex
         {
             this.baud = baud;
 
-            
+            var targetRate = (int)this.baud * 10;
+            var gcd = (int)BigInteger.GreatestCommonDivisor((BigInteger)sampleRate, (BigInteger)targetRate);
 
-            var i = 1;
-            var d = 1;
+            // TODO: refactor this stuff
 
-            if (baud == 1600)
+            int i = targetRate / gcd;
+            int d = (int)sampleRate / gcd;
+
+            // if I gets too big then filtering / performance becomes an issue
+            if (i > 100)
             {
-                i = 32;
-                d = 75;
-            }
-
-            if (baud == 3200)
-            {
-                i = 64;
-                d = 75;
+                i = 1;
+                d = 1;
             }
 
             var isr = sampleRate * i;

@@ -43,6 +43,8 @@
                     samples.Add(s);
                 }
 
+                var baud = 1200;
+
                 //var sr = file.WaveFormat.SampleRate;
 
                 //var i = 256;
@@ -87,7 +89,7 @@
                 //}
 
                 var chain = new PocsagChain(
-                    1200,
+                    baud,
                     file.WaveFormat.SampleRate,
                     (message) =>
                     {

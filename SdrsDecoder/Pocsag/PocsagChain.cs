@@ -1,5 +1,6 @@
 ﻿using SdrsDecoder.Support;
 using System;
+using System.Numerics;
 
 namespace SdrsDecoder.Pocsag
 {
@@ -20,19 +21,18 @@ namespace SdrsDecoder.Pocsag
         {
             this.baud = baud;
 
-            var i = 1;
-            var d = 1;
+            // TODO: refactor this and stuff in flexchain
+            var targetRate = (int)this.baud * 10;
+            var gcd = (int)BigInteger.GreatestCommonDivisor((BigInteger)sampleRate, (BigInteger)targetRate);
 
-            if (baud == 1200)
-            {
-                i = 8;
-                d = 25;
-            }
+            int i = targetRate / gcd;
+            int d = (int)sampleRate / gcd;
 
-            if (baud == 2400)
+            // if I gets too big then filtering / performance becomes an issue
+            if (i > 100)
             {
-                i = 16;
-                d = 25;
+                i = 1;
+                d = 1;
             }
 
             var isr = sampleRate * i;
