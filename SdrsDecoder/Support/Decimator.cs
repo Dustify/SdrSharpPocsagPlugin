@@ -13,6 +13,8 @@ namespace SdrsDecoder.Support
             this.Value = value;
         }
 
+        //private float[] overflow;
+
         public float[] Process(float[] values)
         {
             if (this.Value <= 1)
@@ -20,7 +22,14 @@ namespace SdrsDecoder.Support
                 return values;
             }
 
+            //if (overflow!=null)
+            //{
+            //    values = overflow.Concat(values).ToArray();
+            //}
+
             var result = new float[values.Length / this.Value];
+
+            //var overflowSet = false;
 
             for (var x = 0; x < result.Length; x++)
             {
@@ -28,11 +37,19 @@ namespace SdrsDecoder.Support
 
                 if (p > values.Length - 1)
                 {
+                    //overflowSet = true;
+                    //overflow = values.Skip((x - 1) * this.Value).ToArray();
+
                     continue;
                 }
 
                 result[x] = values[p];
             }
+
+            //if (!overflowSet)
+            //{
+            //    overflow = null;
+            //}
 
             return result;
         }

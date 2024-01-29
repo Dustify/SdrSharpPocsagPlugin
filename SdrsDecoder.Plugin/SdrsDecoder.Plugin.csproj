@@ -25,9 +25,11 @@
   <ItemGroup>
     <Reference Include="SDRSharp.Common">
       <HintPath>..\Assemblies\SDRSharp.Common.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SDRSharp.Radio">
       <HintPath>..\Assemblies\SDRSharp.Radio.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
 

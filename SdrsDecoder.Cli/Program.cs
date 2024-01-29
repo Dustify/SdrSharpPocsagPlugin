@@ -12,7 +12,7 @@
         {
             try
             {
-                var source = "raw3.wav";
+                var source = "raw.wav";
 
                 if (args.Length > 0)
                 {
@@ -87,7 +87,7 @@
                 //}
 
                 var chain = new PocsagChain(
-                    2400,
+                    1200,
                     file.WaveFormat.SampleRate,
                     (message) =>
                     {
@@ -100,7 +100,7 @@
 
                 chain.Process(samples.ToArray(), writeSample: ws);
 
-                using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(37500, 4)))
+                using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(12000, 4)))
                 {
                     foreach (var ss in debug.ToArray())
                     {
@@ -115,7 +115,7 @@
             }
 
             Console.WriteLine("Done.");
-            Console.ReadKey(true);
+            //Console.ReadKey(true);
         }
     }
 }
