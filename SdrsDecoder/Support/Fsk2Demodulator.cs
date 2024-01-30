@@ -28,11 +28,6 @@ namespace SdrsDecoder.Support
 
             for (var i = 0; i < values.Length; i++)
             {
-                if (i == 7744)
-                {
-
-                }
-
                 var value = values[i];
                 value_fifo.Enqueue(value);
 
