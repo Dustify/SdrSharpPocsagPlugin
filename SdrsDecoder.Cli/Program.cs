@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using NAudio.Wave;
+    using SdrsDecoder.Ax25;
     using SdrsDecoder.Pocsag;
     using SdrsDecoder.Support;
 
@@ -12,7 +13,8 @@
         {
             try
             {
-                var source = "SDRSharp_20210414_211225Z_156150138Hz_AF.wav";
+                var source = "aprs.wav";
+                var baud = 1200;
 
                 if (args.Length > 0)
                 {
@@ -23,7 +25,7 @@
 
                 //Console.ReadKey(true);
 
-                var file = new NAudio.Wave.WaveFileReader(source);
+                var file = new WaveFileReader(source);
 
                 var samples = new List<float>();
 
@@ -41,56 +43,72 @@
                     samples.Add(s);
                 }
 
-                var baud = 512;
+                var sr = file.WaveFormat.SampleRate;
+                var rv = ChainBase.GetResampleValues(baud, sr);
 
-                //var sr = file.WaveFormat.SampleRate;
+                var interpolator = new Interpolator(rv.i);
+                var interpd = interpolator.Process(samples.ToArray());
 
-                //var i = 256;
-                //var d = 1875;
+                using (var writer = new WaveFileWriter("interpd.wav", new WaveFormat(rv.isr, 1)))
+                {
+                    foreach (var s in interpd)
+                    {
+                        writer.WriteSample(s);
+                    }
+                }
 
-                //var isr = sr * i;
+                var filter = new ChebyFilter(baud, 1, rv.isr);
+                var filterd = filter.Process(interpd);
 
-                //var interpolator = new Interpolator(i);
-                //var interpd = interpolator.Process(samples.ToArray());
+                using (var writer = new WaveFileWriter("filterd.wav", new WaveFormat(rv.isr, 1)))
+                {
+                    foreach (var s in filterd)
+                    {
+                        writer.WriteSample(s);
+                    }
+                }
 
-                //using (var writer = new WaveFileWriter("interpd.wav", new WaveFormat(isr, 1)))
-                //{
-                //    foreach (var s in interpd)
-                //    {
-                //        writer.WriteSample(s);
-                //    }
-                //}
+                var decim = new Decimator(rv.d);
+                var decimd = decim.Process(filterd);
 
-                //var filter = new ChebyFilter(512, 1, isr);
-                //var filterd = filter.Process(interpd);
+                using (var writer = new WaveFileWriter("decimd.wav", new WaveFormat(rv.dsr, 1)))
+                {
+                    foreach (var s in decimd)
+                    {
+                        writer.WriteSample(s);
+                    }
+                }
 
-                //using (var writer = new WaveFileWriter("filterd.wav", new WaveFormat(isr, 1)))
-                //{
-                //    foreach (var s in filterd)
-                //    {
-                //        writer.WriteSample(s);
-                //    }
-                //}
+                var iqDemod = new IqDemod(rv.dsr, baud, 1200, 2200);
+                var iqdemodd = iqDemod.Process(decimd);
 
-
-                //var dsr = isr / d;
-
-                //var decim = new Decimator(d);
-                //var decimd = decim.Process(filterd);
-
-                //using (var writer = new WaveFileWriter("decimd.wav", new WaveFormat(dsr, 1)))
-                //{
-                //    foreach (var s in decimd)
-                //    {
-                //        writer.WriteSample(s);
-                //    }
-                //}
+                using (var writer = new WaveFileWriter("iqdemodd.wav", new WaveFormat(rv.dsr, 1)))
+                {
+                    foreach (var s in iqdemodd)
+                    {
+                        writer.WriteSample(s);
+                    }
+                }
 
                 var messageCount = 0f;
                 var successCount = 0f;
 
-                var chain = new PocsagChain(
-                    baud,
+                //var chain = new PocsagChain(
+                //    baud,
+                //    file.WaveFormat.SampleRate,
+                //    (message) =>
+                //    {
+                //        messageCount += 1;
+
+                //        if (!message.HasErrors)
+                //        {
+                //            successCount += 1;
+                //        }
+
+                //        Console.WriteLine(message.ErrorText + (message.HasErrors ? "" : " " + message.TypeText + " " + message.Payload));
+                //    });
+
+                var chain = new Ax25Chain(
                     file.WaveFormat.SampleRate,
                     (message) =>
                     {
@@ -101,7 +119,7 @@
                             successCount += 1;
                         }
 
-                        Console.WriteLine(message.ErrorText + (message.HasErrors ? "" : " " + message.TypeText + " " + message.Payload));
+                        Console.WriteLine(message.Payload);
                     });
 
                 var debug = new List<float>();

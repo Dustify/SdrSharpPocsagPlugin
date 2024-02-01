@@ -1,5 +1,6 @@
 ﻿namespace SdrsDecoder
 {
+    using SdrsDecoder.Ax25;
     using SdrsDecoder.Flex;
     using SdrsDecoder.Pocsag;
     using SdrsDecoder.Support;
@@ -25,7 +26,8 @@
                     new PocsagChain(2400f, this.SampleRate, messageReceived),
                     new FlexChain(1600f, this.SampleRate, messageReceived),
                     //new FlexChain(3200f, this.SampleRate, messageReceived),
-                };
+                    //new Ax25Chain(this.SampleRate,messageReceived)
+            };
             }
             catch (Exception exception)
             {

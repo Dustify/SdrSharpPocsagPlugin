@@ -35,7 +35,7 @@ namespace SdrsDecoder.Support
 
                 if (lo_state != last_lo_state)
                 {
-                    output_state = value_fifo._queue.Average() >= 0;
+                    output_state = value_fifo.Queue.Average() >= 0;
                     result.Add(invert ? !output_state : output_state);
                 }
 

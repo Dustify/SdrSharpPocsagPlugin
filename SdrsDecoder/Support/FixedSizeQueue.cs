@@ -5,28 +5,28 @@ namespace SdrsDecoder.Support
 
     public class FixedSizeQueue<T>
     {
-        public readonly List<T> _queue;
+        public readonly List<T> Queue;
         private readonly int _limit;
 
         public FixedSizeQueue(int limit)
         {
             _limit = limit;
-            _queue = new List<T>(limit);
+            Queue = new List<T>(limit);
         }
 
         public void Enqueue(T item)
         {
-            if (_queue.Count >= _limit)
+            if (Queue.Count >= _limit)
             {
-                _queue.RemoveAt(0);
+                Queue.RemoveAt(0);
             }
 
-            _queue.Add(item);
+            Queue.Add(item);
         }
 
         public int Count
         {
-            get { return _queue.Count; }
+            get { return Queue.Count; }
         }
     }
 }

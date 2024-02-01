@@ -1,13 +1,13 @@
 ﻿using SdrsDecoder.Support;
 using System;
 
-namespace SdrsDecoder.Flex
+namespace SdrsDecoder.Ax25
 {
-    public class FlexMessage : MessageBase
+    public class Ax25Message : MessageBase
     {
-        public FlexMessage(uint bps) : base(bps)
+        public Ax25Message() : base(1200)
         {
-            Protocol = $"FLEX / {bps} / 2";
+            Protocol = $"AX25 / 1200";
 
             Hash = DateTime.Now.ToString();
             Type = MessageType.AlphaNumeric;
