@@ -15,8 +15,8 @@
         {
             try
             {
-                var source = "TNC_Test_Ver-1 track 1 AUDIO-2352.wav";
-                //var source = "aprs4.wav";
+                //var source = "TNC_Test_Ver-1 track 1 AUDIO-2352.wav";
+                var source = "aprs4.wav";
                 var baud = 1200;
 
                 if (args.Length > 0)
@@ -141,7 +141,7 @@
                     var block = samples.Skip(position).Take(1000).ToArray();
                     chain.Process(
                         block
-                        //, writeSample: ws
+                        , writeSample: ws
                         );
 
                     position += 1000;
@@ -159,13 +159,13 @@
 
                 Console.WriteLine($"{successCount} / {messageCount} = {successCount / messageCount * 100}%");
 
-                //using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(chain.Rv.dsr, 4)))
-                //{
-                //    foreach (var ss in debug.ToArray())
-                //    {
-                //        writer.WriteSample(ss);
-                //    }
-                //}
+                using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(chain.Rv.dsr, 4)))
+                {
+                    foreach (var ss in debug.ToArray())
+                    {
+                        writer.WriteSample(ss);
+                    }
+                }
             }
             catch (Exception exception)
             {

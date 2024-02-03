@@ -6,14 +6,18 @@ namespace SdrsDecoder
 
     public class IqDemod
     {
+        public float[] SpaceMultiplers;
+
         public float[] MarkI { get; }
         public float[] MarkQ { get; }
         public float[] SpaceI { get; }
         public float[] SpaceQ { get; }
         public FixedSizeQueue<float> Buffer { get; }
 
-        public IqDemod(float sampleRate, float baud, float mark, float space)
+        public IqDemod(float sampleRate, float baud, float mark, float space, float[] spaceMultipliers)
         {
+            this.SpaceMultiplers = spaceMultipliers;
+
             var samps_per_symbol = (int)Math.Round(sampleRate / baud);
 
             this.MarkI = new float[samps_per_symbol];
@@ -40,7 +44,7 @@ namespace SdrsDecoder
             this.Buffer = new FixedSizeQueue<float>(samps_per_symbol);
         }
 
-        public float Process(float value)
+        public float[] Process(float value)
         {
             this.Buffer.Enqueue(value);
 
@@ -78,17 +82,34 @@ namespace SdrsDecoder
             space_product_s = (float)Math.Pow(space_product_s, 2);
             space_product_c = (float)Math.Pow(space_product_c, 2);
 
+            var results = new float[this.SpaceMultiplers.Length];
+
             var mark_mag = (float)Math.Sqrt(mark_product_s + mark_product_c);
             var space_mag = (float)Math.Sqrt(space_product_s + space_product_c);
 
-            var result = (mark_mag - space_mag);// * 0.1f;
+            for (var i = 0; i < this.SpaceMultiplers.Length; i++)
+            {
+                results[i] = mark_mag - (space_mag * this.SpaceMultiplers[i]);
+            }
 
-            return result;
+            return results;
         }
 
-        public float[] Process(float[] values)
+        public float[,] Process(float[] values)
         {
-            return Array.ConvertAll(values, this.Process);
+            var results = new float[this.SpaceMultiplers.Length, values.Length];
+
+            for (var i = 0; i < values.Length; i++)
+            {
+                var result = this.Process(values[i]);
+
+                for (var y = 0; y < this.SpaceMultiplers.Length; y++)
+                {
+                    results[y, i] = result[y];
+                }
+            }
+
+            return results;
         }
     }
 }

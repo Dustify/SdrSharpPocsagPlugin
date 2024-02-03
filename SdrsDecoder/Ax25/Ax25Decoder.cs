@@ -12,10 +12,14 @@ namespace SdrsDecoder.Ax25
             this.messageReceived = messageReceived;
         }
 
-        public Ax25FramePost Frame = new Ax25FramePost();
+        public Ax25FramePost Frame = new Ax25FramePost(0);
+
+        public UInt64 Index = 0;
 
         public void Process(NrzResponse value)
         {
+            Index++;
+
             if (!value.HasValue)
             {
                 return;
@@ -30,7 +34,7 @@ namespace SdrsDecoder.Ax25
             if (reversed_value == 0x7e)
             {
                 this.Frame.Process(messageReceived);
-                this.Frame = new Ax25FramePost();
+                this.Frame = new Ax25FramePost(Index);
             }
         }
 

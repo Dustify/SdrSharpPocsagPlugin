@@ -3,6 +3,7 @@ using SdrsDecoder.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SdrsDecoder
 {
@@ -26,6 +27,8 @@ namespace SdrsDecoder
 
     public class Ax25FramePost
     {
+        public static List<string> Dedupe = new List<string>();
+
         // FCS processing with reference to https://github.com/wb2osz/direwolf/blob/de293a1f2526ec6639fe31fa411bd4f2319ecdf4/src/fcs_calc.c#L114 and
         // https://www.ietf.org/rfc/rfc1549.txt
         static ushort[] fcstab = {
@@ -64,6 +67,13 @@ namespace SdrsDecoder
         };
 
         public List<bool> Bits { get; } = new List<bool>();
+
+        public UInt64 Index;
+
+        public Ax25FramePost(UInt64 index)
+        {
+            this.Index = index;
+        }
 
         public void Add(byte value)
         {
@@ -130,7 +140,7 @@ namespace SdrsDecoder
             }
 
             // FCS check here
-            var calcFcs = 0xffff;
+            var calcFcs = (ushort)0xffff;
 
             // https://github.com/wb2osz/direwolf/blob/de293a1f2526ec6639fe31fa411bd4f2319ecdf4/src/fcs_calc.c#L114
             for (var i = 0; i < bytes.Count - 2; i++)
@@ -167,7 +177,13 @@ namespace SdrsDecoder
             messageObj.HasErrors = calcFcs != rxFcs;
             messageObj.ErrorText = messageObj.HasErrors ? "Yes" : "No";
 
-            messageReceived(messageObj);
+            var indexString = calcFcs.ToString();
+
+            if (!Dedupe.Contains(indexString))
+            {
+                messageReceived(messageObj);
+                Dedupe.Add(indexString);
+            }            
         }
     }
 }
