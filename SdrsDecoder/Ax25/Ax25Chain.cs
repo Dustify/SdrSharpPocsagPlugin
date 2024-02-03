@@ -9,6 +9,7 @@ namespace SdrsDecoder.Ax25
         private ChebyFilter filter;
         private Decimator decimator;
         private IqDemod iqDemodulator;
+        private ChebyFilter filter2;
         private Fsk2Demodulator fskDemodulator;
         private NrzDecoder nrzDecoder;
         private Ax25Decoder ax25Decoder;
@@ -25,9 +26,10 @@ namespace SdrsDecoder.Ax25
             var pll = new Pll(Rv.dsr, baud);
 
             interpolator = new Interpolator(Rv.i);
-            filter = new ChebyFilter(space, 1f, Rv.isr);
+            filter = new ChebyFilter(space * 1.2f, 1f, Rv.isr);
             decimator = new Decimator(Rv.d);
             iqDemodulator = new IqDemod(Rv.dsr, baud, mark, space);
+            filter2 = new ChebyFilter(baud * 1.2f, 1f, Rv.dsr);
             fskDemodulator = new Fsk2Demodulator(baud, Rv.dsr, pll, false);
             nrzDecoder = new NrzDecoder();
             ax25Decoder = new Ax25Decoder(messageReceived);
@@ -39,6 +41,7 @@ namespace SdrsDecoder.Ax25
             processed_values = filter.Process(processed_values);
             processed_values = decimator.Process(processed_values);
             processed_values = iqDemodulator.Process(processed_values);
+            processed_values = filter2.Process(processed_values);
 
             var fsk_demodulated_values = fskDemodulator.Process(processed_values, writeSample);
             var nrz_decoded_values = nrzDecoder.Process(fsk_demodulated_values);

@@ -26,7 +26,7 @@
                     new PocsagChain(2400f, this.SampleRate, messageReceived),
                     new FlexChain(1600f, this.SampleRate, messageReceived),
                     //new FlexChain(3200f, this.SampleRate, messageReceived),
-                    //new Ax25Chain(this.SampleRate,messageReceived)
+                    new Ax25Chain(this.SampleRate,messageReceived)
             };
             }
             catch (Exception exception)
