@@ -142,35 +142,56 @@ namespace SdrsDecoder
             messageObj.HasErrors = calcFcs != rxFcs;
             messageObj.ErrorText = messageObj.HasErrors ? "Yes" : "No";
 
-            var to = "";
+            var lastAddressFound = false;
+            var addressCount = 0;
 
-            // TO:
-            for (var i = 0; i < 6; i++)
+            var calls = new List<string>();
+
+            while (!lastAddressFound && addressCount < 6)
             {
-                var b = (int)bytes[i];
-                b = b >> 1;
+                var start = addressCount * 7;
 
-                to += (char)b;
+                var call = "";
+
+                for (var i = 0; i < 7; i++)
+                {
+                    var b = (int)bytes[i + start];
+
+                    if ((b & 1) == 1)
+                    {
+                        lastAddressFound = true;
+                    }
+
+                    b = b >> 1;
+
+                    if (i < 6)
+                    {
+                        call += (char)b;
+                    }
+                    else
+                    {
+                        call = call.Trim();
+                        call += "-" + (b & 0b1111).ToString();
+                    }
+                }
+
+                calls.Add(call);
+
+                addressCount++;
             }
 
-            to = to.Trim();
-
-            var from = "";
-
-            // FROM:
-            for (var i = 7; i < 13; i++)
+            if (calls.Count >= 2)
             {
-                var b = (int)bytes[i];
-                b = b >> 1;
-
-                from += (char)b;
+                messageObj.Address = $"{calls[1]}>{calls[0]}";
             }
 
-            from = from.Trim();
+            for (var i = 2; i < calls.Count; i++)
+            {
+                messageObj.Address += $",{calls[i]}";
+            }
 
-            messageObj.Address = $"{from}>{to}";
-
-            for (var i = 2; i < bytes.Count - 2; i++)
+            // dump rest of message
+            for (var i = ((addressCount - 1) * 7); i < bytes.Count - 2; i++)
             {
                 var b = bytes[i];
 
