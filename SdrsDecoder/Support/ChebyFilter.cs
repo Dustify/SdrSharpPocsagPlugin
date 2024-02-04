@@ -21,7 +21,7 @@ namespace SdrsDecoder.Support
             float epsilon = (float)Math.Sqrt(Math.Pow(10, rippleDb / 10) - 1);
             float v = (float)(Math.Asinh(1 / epsilon) / 2);
             float k1 = (float)Math.Sinh(v);
-            float k2 = (float)Math.Cosh(v);
+            //float k2 = (float)Math.Cosh(v);
 
             a0 = 1 + 2 * k1 * Wc + Wc * Wc;
             a1 = 2 * (Wc * Wc - 1);

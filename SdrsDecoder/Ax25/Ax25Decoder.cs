@@ -5,40 +5,44 @@ namespace SdrsDecoder.Ax25
 {
     public class Ax25Decoder
     {
+        private float spaceMultiplier;
         private Action<MessageBase> messageReceived;
 
-        public Ax25Decoder(Action<MessageBase> messageReceived)
+        public Ax25Decoder(Action<MessageBase> messageReceived, float spaceMultiplier)
         {
+            this.spaceMultiplier = spaceMultiplier;
             this.messageReceived = messageReceived;
         }
 
-        public Ax25FramePost Frame = new Ax25FramePost(0);
+        public Ax25FramePost Frame = new Ax25FramePost(0, 0);
 
         public UInt64 Index = 0;
 
-        public void Process(NrzResponse value)
+        public int CurrentValue = 0;
+
+        public void Flag()
+        {
+            this.Frame.Process(messageReceived);
+            this.Frame = new Ax25FramePost(Index, this.spaceMultiplier);
+        }
+
+        public void Process(bool value)
         {
             Index++;
 
-            if (!value.HasValue)
+            CurrentValue = CurrentValue << 1;
+
+            if (value)
             {
-                return;
+                CurrentValue |= 1;
             }
 
-            // inverted not reversed?
-            var reversed_value = (byte)(value.Decode & 0xFF);
+            var byteValue = (byte)(CurrentValue & 0xFF);
 
-            this.Frame.Add(reversed_value);
-
-            // FRAME
-            if (reversed_value == 0x7e)
-            {
-                this.Frame.Process(messageReceived);
-                this.Frame = new Ax25FramePost(Index);
-            }
+            this.Frame.Add(byteValue);
         }
 
-        public void Process(NrzResponse[] values)
+        public void Process(bool[] values)
         {
             foreach (var value in values)
             {

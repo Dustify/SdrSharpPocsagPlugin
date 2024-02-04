@@ -15,8 +15,10 @@
         {
             try
             {
-                //var source = "TNC_Test_Ver-1 track 1 AUDIO-2352.wav";
-                var source = "aprs4.wav";
+                var source = "TNC_Test_Ver-1 track 1 AUDIO-2352.wav";
+                //var source = "aprs 3.wav";
+                //var source = "aprs4-n3.wav";
+
                 var baud = 1200;
 
                 if (args.Length > 0)
@@ -60,7 +62,7 @@
                 //    }
                 //}
 
-                //var filter = new ChebyFilter(baud, 1, rv.isr);
+                //var filter = new ChebyFilter(2200, 1, rv.isr);
                 //var filterd = filter.Process(interpd);
 
                 //using (var writer = new WaveFileWriter("filterd.wav", new WaveFormat(rv.isr, 1)))
@@ -128,8 +130,8 @@
                         //Console.WriteLine(message.Payload);
                     });
 
-                var debug = new List<float>();
-                void ws(float sample) { debug.Add(sample); }
+                //var debug = new List<float>();
+                //void ws(float sample) { debug.Add(sample); }
 
                 var position = 0;
 
@@ -141,7 +143,7 @@
                     var block = samples.Skip(position).Take(1000).ToArray();
                     chain.Process(
                         block
-                        , writeSample: ws
+                        //, writeSample: ws
                         );
 
                     position += 1000;
@@ -159,13 +161,13 @@
 
                 Console.WriteLine($"{successCount} / {messageCount} = {successCount / messageCount * 100}%");
 
-                using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(chain.Rv.dsr, 4)))
-                {
-                    foreach (var ss in debug.ToArray())
-                    {
-                        writer.WriteSample(ss);
-                    }
-                }
+                //using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(chain.Rv.dsr, 4)))
+                //{
+                //    foreach (var ss in debug.ToArray())
+                //    {
+                //        writer.WriteSample(ss);
+                //    }
+                //}                
             }
             catch (Exception exception)
             {

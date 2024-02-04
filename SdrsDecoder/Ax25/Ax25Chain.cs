@@ -11,21 +11,25 @@ namespace SdrsDecoder.Ax25
         private IqDemod iqDemodulator;
         private ChebyFilter[] filter2;
         private Fsk2Demodulator[] fskDemodulator;
+        private Unstuffer[] unstuffer;
+
         private NrzDecoder[] nrzDecoder;
         private Ax25Decoder[] ax25Decoder;
 
         //static float[] SpaceMultipliers = new float[] { 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.8f, 1.9f, 2.0f };
+        //static float[] SpaceMultipliers = new float[] { 1.0f };
+
         static float[] SpaceMultipliers = new float[] { 1.0f };
 
         public ResampleValues Rv { get; private set; }
 
-        private static T[] GetMultipliedObject<T>(Func<T> func)
+        private static T[] GetMultipliedObject<T>(Func<float, T> func)
         {
             var result = new T[SpaceMultipliers.Length];
 
             for (var i = 0; i < SpaceMultipliers.Length; i++)
             {
-                result[i] = func();
+                result[i] = func(SpaceMultipliers[i]);
             }
 
             return result;
@@ -46,11 +50,12 @@ namespace SdrsDecoder.Ax25
             decimator = new Decimator(Rv.d);
             iqDemodulator = new IqDemod(Rv.dsr, baud, mark, space, SpaceMultipliers);
 
-            filter2 = GetMultipliedObject(() => new ChebyFilter(baud * filterFactor, 1f, Rv.dsr));
+            filter2 = GetMultipliedObject((float sm) => new ChebyFilter(baud * filterFactor, 1f, Rv.dsr));
 
-            fskDemodulator = GetMultipliedObject(() => { var pll = new Pll(Rv.dsr, baud); return new Fsk2Demodulator(baud, Rv.dsr, pll, false); });
-            nrzDecoder = GetMultipliedObject(() => new NrzDecoder());
-            ax25Decoder = GetMultipliedObject(() => new Ax25Decoder(messageReceived));
+            fskDemodulator = GetMultipliedObject((float sm) => { var pll = new Pll(Rv.dsr, baud); return new Fsk2Demodulator(baud, Rv.dsr, pll, false); });
+            unstuffer = GetMultipliedObject((float sm) => { return new Unstuffer(); });
+            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder());
+            ax25Decoder = GetMultipliedObject((float sm) => new Ax25Decoder(messageReceived, sm));
         }
 
         public override void Process(float[] values, Action<float> writeSample = null)
@@ -77,9 +82,22 @@ namespace SdrsDecoder.Ax25
                     fskDemodulator[x].Process(iqdemod_values, writeSample) :
                     fskDemodulator[x].Process(iqdemod_values);
 
-                var nrz_decoded_values = nrzDecoder[x].Process(fsk_demodulated_values);
+                foreach (var value in fsk_demodulated_values)
+                {
+                    var nrz_decode = nrzDecoder[x].Process(value);
 
-                ax25Decoder[x].Process(nrz_decoded_values);
+                    if (nrz_decode.IsFlag)
+                    {
+                        ax25Decoder[x].Flag();
+                    }
+
+                    var unstuffed = unstuffer[x].Process(nrz_decode.Value);
+
+                    if (unstuffed.HasValue)
+                    {
+                        ax25Decoder[x].Process(unstuffed.Value);
+                    }
+                }
             }
         }
     }

@@ -20,14 +20,9 @@ namespace SdrsDecoder.Support
 
         public override bool Process(float value, Action<float> writeSample = null)
         {
-            //if (lo_phase < 0)
-            //{
-            //    lo_phase = 0;
-            //}
-
             if (lo_phase >= phase_per_sample)
             {
-                lo_phase = 0;
+                lo_phase -= phase_per_sample;
                 lo_state = !lo_state;
             }
 

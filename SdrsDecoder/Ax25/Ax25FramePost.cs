@@ -68,10 +68,12 @@ namespace SdrsDecoder
 
         public List<bool> Bits { get; } = new List<bool>();
 
+        private float spaceMultiplier;
         public UInt64 Index;
 
-        public Ax25FramePost(UInt64 index)
+        public Ax25FramePost(UInt64 index, float spaceMultiplier)
         {
+            this.spaceMultiplier = spaceMultiplier;
             this.Index = index;
         }
 
@@ -97,8 +99,9 @@ namespace SdrsDecoder
 
         public void Process(Action<MessageBase> messageReceived)
         {
-            // WHYYYYY!??!?!!
-            this.Bits.Insert(0, false);
+            // frame has just been detected but 0 will be removed by unstuffer
+            // ... so add it here
+            this.Bits.Add(false);
 
             var count = this.Bits.Count;
 
@@ -114,7 +117,7 @@ namespace SdrsDecoder
                 return;
             }
 
-            // remove FRAME at end
+            // remove FLAG at end
             this.Bits.RemoveRange(this.Bits.Count - 8, 8);
 
             var bytes = new List<byte>();
@@ -155,6 +158,8 @@ namespace SdrsDecoder
 
             var message = "";
 
+            message += this.spaceMultiplier.ToString() + " ";
+
             //message += "RX:" + Convert.ToString(rxFcs, 2).PadLeft(16, '0') + "\n";
             //message += "CL:" + Convert.ToString(calcFcs, 2).PadLeft(16, '0') + "\n";
 
@@ -177,13 +182,13 @@ namespace SdrsDecoder
             messageObj.HasErrors = calcFcs != rxFcs;
             messageObj.ErrorText = messageObj.HasErrors ? "Yes" : "No";
 
-            var indexString = calcFcs.ToString();
+            //var indexString = calcFcs.ToString();
 
-            if (!Dedupe.Contains(indexString))
-            {
-                messageReceived(messageObj);
-                Dedupe.Add(indexString);
-            }            
+            //if (!Dedupe.Contains(indexString))
+            //{
+            messageReceived(messageObj);
+            //    Dedupe.Add(indexString);
+            //}            
         }
     }
 }
