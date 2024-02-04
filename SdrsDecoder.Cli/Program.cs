@@ -34,7 +34,7 @@
 
         static void Acars()
         {
-            var source = "acars.wav";
+            var source = "acars2.wav";
 
             Console.WriteLine($"Source: {source}");
 
@@ -58,14 +58,21 @@
 
             var sr = file.WaveFormat.SampleRate;
 
+            var mc = 0;
+            var ms = 0;
+
             var chain = new AcarsChain(sr, (message) =>
             {
+                mc++;
+
                 if (message.HasErrors)
                 {
                     return;
                 }
 
-                Console.WriteLine(message.Payload);
+                ms++;
+
+                Console.WriteLine(message.ErrorText + " " + message.Payload);
             });
 
             var position = 0;
@@ -85,6 +92,8 @@
 
                 position += 1000;
             }
+
+            Console.WriteLine($"{ms} / {mc} = {(float)ms / mc}%");
 
             sw.Stop();
 

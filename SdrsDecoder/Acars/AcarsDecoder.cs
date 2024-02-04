@@ -28,6 +28,12 @@ namespace SdrsDecoder.Acars
 
         public void Flag()
         {
+            if (this.Bits.Count < 40)
+            {
+                this.Bits = new List<bool>();
+                return;
+            }
+
             if (this.Bits.Count % 8 != 0)
             {
                 this.Bits = new List<bool>();
@@ -73,22 +79,49 @@ namespace SdrsDecoder.Acars
             // CRC pt2
             // DEL (already removed)
 
+            // make sure 3rd from last is ETX / ETB
+            var hasEomError = true;
+
+            var eomByte = bytes[bytes.Count - 3] & 0b01111111;
+
+            if (eomByte == 3 || eomByte == 23)
+            {
+                hasEomError = false;
+            }
 
             var hasParityError = false;
+            var hasCrcError = false;
 
+            var rxCrc = (ushort)(bytes[^2] | (bytes[^1] << 8));
+            var calcCrc = (ushort)0;
 
             for (var i = 0; i < bytes.Count - 2; i++)
             {
                 var b = bytes[i];
-                var v = b & 0b01111111;
-
-                payload += (char)v;
-
                 var rxParity = (b >> 7) == 1;
                 var calcParity = false;
 
-                for (var y = 0; y < 7; y++)
+                // crc + parity
+
+                calcCrc ^= b;
+
+                for (var y = 0; y < 8; y++)
                 {
+                    if ((calcCrc & 1) == 1)
+                    {
+                        calcCrc >>= 1;
+                        calcCrc ^= 0x8408;
+                    }
+                    else
+                    {
+                        calcCrc >>= 1;
+                    }
+
+                    if (y >= 7)
+                    {
+                        continue;
+                    }
+
                     if ((b >> y & 1) == 0)
                     {
                         calcParity = !calcParity;
@@ -99,15 +132,51 @@ namespace SdrsDecoder.Acars
                 {
                     hasParityError = true;
                 }
+
+                if (i >= bytes.Count - 3)
+                {
+                    continue;
+                }
+
+                // get char for payload
+                var v = b & 0b01111111;
+
+                payload += (char)v;
             }
 
-            // CRC needed here
+            if (rxCrc != calcCrc)
+            {
+                hasCrcError = true;
+            }
 
             // process data
             var message = new AcarsMessage();
 
-            message.HasErrors = hasParityError;
+            message.HasErrors = hasParityError || hasEomError || hasCrcError;
+            message.ErrorText = message.HasErrors ? "Yes" : "No";
             message.Payload = payload;
+
+            if (message.HasErrors)
+            {
+                message.ErrorText += " (";
+
+                if (hasParityError)
+                {
+                    message.ErrorText += "P";
+                }
+
+                if (hasEomError)
+                {
+                    message.ErrorText += "E";
+                }
+
+                if (hasCrcError)
+                {
+                    message.ErrorText += "C";
+                }
+
+                message.ErrorText += ")";
+            }
 
             this.messageReceived(message);
 

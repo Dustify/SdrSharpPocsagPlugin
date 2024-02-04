@@ -56,7 +56,7 @@ namespace SdrsDecoder.Ax25
 
             fskDemodulator = GetMultipliedObject((float sm) => { var pll = new Pll(Rv.dsr, baud); return new Fsk2Demodulator(baud, Rv.dsr, pll, false); });
             unstuffer = GetMultipliedObject((float sm) => { return new Unstuffer(); });
-            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder(0xff, 0x7e, NrzMode.Nrzi));
+            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder(0xff, 0x7e, NrzMode.Ax25));
             ax25Decoder = GetMultipliedObject((float sm) => new Ax25Decoder(messageReceived, sm));
         }
 

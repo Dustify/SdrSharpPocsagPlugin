@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 
 namespace SdrsDecoder.Support
 {
@@ -11,8 +10,8 @@ namespace SdrsDecoder.Support
 
     public enum NrzMode
     {
-        Nrzi,
-        Nrz // ? for acars anyway
+        Ax25,
+        Acars
     }
 
     public class NrzDecoder
@@ -22,9 +21,11 @@ namespace SdrsDecoder.Support
         private int flagMask;
         private int flag;
         private NrzMode mode;
-        private bool LastValue = true;
+        public bool LastValue = true;
+        private FixedSizeQueue<bool> history = new FixedSizeQueue<bool>(10);
 
-        public NrzDecoder(int flagMask, int flag, NrzMode mode) {
+        public NrzDecoder(int flagMask, int flag, NrzMode mode)
+        {
             this.flagMask = flagMask;
             this.flag = flag;
             this.mode = mode;
@@ -34,7 +35,7 @@ namespace SdrsDecoder.Support
         {
             var result = false;
 
-            if (this.mode == NrzMode.Nrzi)
+            if (this.mode == NrzMode.Ax25)
             {
                 // no change means 1
                 if (value == LastBit)
@@ -43,8 +44,16 @@ namespace SdrsDecoder.Support
                 }
             }
 
-            if (this.mode == NrzMode.Nrz)
+            if (this.mode == NrzMode.Acars)
             {
+                history.Enqueue(value);
+
+                // acars nrzi reset on preamble
+                if (history.Queue.Count(x => x == false) == 0)
+                {
+                    LastValue = true;
+                }
+
                 result = LastValue;
 
                 // 0 means change

@@ -45,7 +45,7 @@ namespace SdrsDecoder.Acars
             iqDemodulator = new IqDemod(Rv.dsr, baud, 2400, 1200, SpaceMultipliers);
             filter2 = GetMultipliedObject((float sm) => new ChebyFilter(baud * filterFactor, 1f, Rv.dsr));
             fskDemodulator = GetMultipliedObject((float sm) => { var pll = new Pll(Rv.dsr, baud); return new Fsk2Demodulator(baud, Rv.dsr, pll, false); });
-            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder(0xFFFFFF, 0x686880, NrzMode.Nrz));
+            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder(0xFFFFFF, 0x686880, NrzMode.Acars));
             acarsDecoders = GetMultipliedObject((float sm) => new AcarsDecoder(messageReceived));
         }
 
@@ -73,7 +73,6 @@ namespace SdrsDecoder.Acars
                     x == 0 ?
                     fskDemodulator[x].Process(iqdemod_values, writeSample) :
                     fskDemodulator[x].Process(iqdemod_values);
-
 
                 foreach (var value in fsk_demodulated_values)
                 {
