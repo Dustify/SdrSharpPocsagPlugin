@@ -1,10 +1,11 @@
 ﻿using SdrsDecoder.Support;
 using System;
 
-namespace SdrsDecoder.Ax25
+namespace SdrsDecoder.Acars
 {
-    public class Ax25Chain : ChainBase
+    public class AcarsChain : ChainBase
     {
+        public ResampleValues Rv;
         private Interpolator interpolator;
         private ChebyFilter filter;
         private Decimator decimator;
@@ -12,17 +13,10 @@ namespace SdrsDecoder.Ax25
         private IqDemod iqDemodulator;
         private ChebyFilter[] filter2;
         private Fsk2Demodulator[] fskDemodulator;
-        private Unstuffer[] unstuffer;
-
         private NrzDecoder[] nrzDecoder;
-        private Ax25Decoder[] ax25Decoder;
-
-        //static float[] SpaceMultipliers = new float[] { 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.8f, 1.9f, 2.0f };
-        //static float[] SpaceMultipliers = new float[] { 1.0f };
+        private AcarsDecoder[] acarsDecoders;
 
         static float[] SpaceMultipliers = new float[] { 1.0f };
-
-        public ResampleValues Rv { get; private set; }
 
         private static T[] GetMultipliedObject<T>(Func<float, T> func)
         {
@@ -36,28 +30,23 @@ namespace SdrsDecoder.Ax25
             return result;
         }
 
-        public Ax25Chain(float sampleRate, Action<MessageBase> messageReceived) : base(sampleRate, messageReceived)
+        public AcarsChain(float sampleRate, Action<MessageBase> messageReceived) : base(sampleRate, messageReceived)
         {
-            var baud = 1200;
-            var mark = 1200;
-            var space = 2200;
-
-            this.Rv = GetResampleValues(baud, sampleRate);
+            var baud = 2400;
 
             var filterFactor = 1.2f;
 
+            Rv = GetResampleValues(baud, sampleRate);
             interpolator = new Interpolator(Rv.i);
-            filter = new ChebyFilter(space * filterFactor, 1f, Rv.isr);
+            filter = new ChebyFilter(baud * filterFactor, 1f, Rv.isr);
             decimator = new Decimator(Rv.d);
             dcRemover = new DcRemover(Rv.dsr, baud);
-            iqDemodulator = new IqDemod(Rv.dsr, baud, mark, space, SpaceMultipliers);
 
+            iqDemodulator = new IqDemod(Rv.dsr, baud, 2400, 1200, SpaceMultipliers);
             filter2 = GetMultipliedObject((float sm) => new ChebyFilter(baud * filterFactor, 1f, Rv.dsr));
-
             fskDemodulator = GetMultipliedObject((float sm) => { var pll = new Pll(Rv.dsr, baud); return new Fsk2Demodulator(baud, Rv.dsr, pll, false); });
-            unstuffer = GetMultipliedObject((float sm) => { return new Unstuffer(); });
-            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder(0xff, 0x7e, NrzMode.Nrzi));
-            ax25Decoder = GetMultipliedObject((float sm) => new Ax25Decoder(messageReceived, sm));
+            nrzDecoder = GetMultipliedObject((float sm) => new NrzDecoder(0xFFFFFF, 0x686880, NrzMode.Nrz));
+            acarsDecoders = GetMultipliedObject((float sm) => new AcarsDecoder(messageReceived));
         }
 
         public override void Process(float[] values, Action<float> writeSample = null)
@@ -85,22 +74,21 @@ namespace SdrsDecoder.Ax25
                     fskDemodulator[x].Process(iqdemod_values, writeSample) :
                     fskDemodulator[x].Process(iqdemod_values);
 
+
                 foreach (var value in fsk_demodulated_values)
                 {
                     var nrz_decode = nrzDecoder[x].Process(value);
 
-                    var current_ax25Decoder = ax25Decoder[x];
+                    var acarsDecoder = acarsDecoders[x];
 
-                    if (nrz_decode.IsFlag || current_ax25Decoder.Frame.Bits.Count > (10 * 1024 * 8))
+                    if (nrz_decode.IsFlag || acarsDecoder.Bits.Count > (10 * 1024 * 8))
                     {
-                        current_ax25Decoder.Flag();
+                        acarsDecoder.Flag();
                     }
 
-                    var unstuffed = unstuffer[x].Process(nrz_decode.Value);
-
-                    if (unstuffed.HasValue)
+                    if (!nrz_decode.IsFlag)
                     {
-                        current_ax25Decoder.Process(unstuffed.Value);
+                        acarsDecoder.Process(nrz_decode.Value);
                     }
                 }
             }

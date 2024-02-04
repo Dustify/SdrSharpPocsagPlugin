@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Linq;
     using NAudio.Wave;
+    using SdrsDecoder.Acars;
     using SdrsDecoder.Ax25;
     using SdrsDecoder.Pocsag;
     using SdrsDecoder.Support;
@@ -33,7 +34,67 @@
 
         static void Acars()
         {
+            var source = "acars.wav";
 
+            Console.WriteLine($"Source: {source}");
+
+            var file = new WaveFileReader(source);
+
+            var samples = new List<float>();
+
+            while (true)
+            {
+                var frame = file.ReadNextSampleFrame();
+
+                if (frame == null)
+                {
+                    break;
+                }
+
+                var s = frame[0];
+
+                samples.Add(s);
+            }
+
+            var sr = file.WaveFormat.SampleRate;
+
+            var chain = new AcarsChain(sr, (message) =>
+            {
+                if (message.HasErrors)
+                {
+                    return;
+                }
+
+                Console.WriteLine(message.Payload);
+            });
+
+            var position = 0;
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            var debug = new List<float>();
+
+            while (position < samples.Count)
+            {
+                var block = samples.Skip(position).Take(1000).ToArray();
+                chain.Process(
+                    block,
+                    (s) => { debug.Add(s); }
+                    );
+
+                position += 1000;
+            }
+
+            sw.Stop();
+
+            using (var writer = new WaveFileWriter("debug.wav", new WaveFormat(chain.Rv.dsr, 4)))
+            {
+                foreach (var ss in debug.ToArray())
+                {
+                    writer.WriteSample(ss);
+                }
+            }
         }
 
         static void Ax25NoDebug()

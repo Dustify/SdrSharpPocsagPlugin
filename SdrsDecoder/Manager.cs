@@ -1,5 +1,6 @@
 ﻿namespace SdrsDecoder
 {
+    using SdrsDecoder.Acars;
     using SdrsDecoder.Ax25;
     using SdrsDecoder.Flex;
     using SdrsDecoder.Pocsag;
@@ -44,6 +45,14 @@
                 GetChains = (int sampleRate, Action<MessageBase> messageReceived)=>{
                     return new ChainBase[] {
                         new Ax25Chain(sampleRate, messageReceived),
+                    };
+                }
+            },
+              new DecoderConfigSet{
+                Name = "ACARS (2400)",
+                GetChains = (int sampleRate, Action<MessageBase> messageReceived)=>{
+                    return new ChainBase[] {
+                        new AcarsChain(sampleRate, messageReceived),
                     };
                 }
             },

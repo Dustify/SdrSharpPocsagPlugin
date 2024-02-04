@@ -9,19 +9,51 @@ namespace SdrsDecoder.Support
         public bool IsFlag { get; set; }
     }
 
+    public enum NrzMode
+    {
+        Nrzi,
+        Nrz // ? for acars anyway
+    }
+
     public class NrzDecoder
     {
         private int CurrentValue = 0;
         private bool LastBit = true;
+        private int flagMask;
+        private int flag;
+        private NrzMode mode;
+        private bool LastValue = true;
+
+        public NrzDecoder(int flagMask, int flag, NrzMode mode) {
+            this.flagMask = flagMask;
+            this.flag = flag;
+            this.mode = mode;
+        }
 
         public NrzResult Process(bool value)
         {
             var result = false;
 
-            // no change means 1
-            if (value == LastBit)
+            if (this.mode == NrzMode.Nrzi)
             {
-                result = true;
+                // no change means 1
+                if (value == LastBit)
+                {
+                    result = true;
+                }
+            }
+
+            if (this.mode == NrzMode.Nrz)
+            {
+                result = LastValue;
+
+                // 0 means change
+                if (value == false)
+                {
+                    result = !result;
+                }
+
+                LastValue = result;
             }
 
             LastBit = value;
@@ -35,7 +67,7 @@ namespace SdrsDecoder.Support
 
             var isFlag = false;
 
-            if ((byte)(CurrentValue & 0xFF) == 0x7e)
+            if ((CurrentValue & flagMask) == flag)
             {
                 isFlag = true;
             }
