@@ -46,39 +46,15 @@
             }
         }
 
-        public int Pocsag512FilterDepth
+        public string SelectedMode
         {
             get
             {
-                return Utils.GetIntSetting("plugin.pocsag.Pocsag512FilterDepth", 92);
+                return Utils.GetStringSetting("plugin.pocsag.SelectedMode", "POCSAG");
             }
             set
             {
-                Utils.SaveSetting("plugin.pocsag.Pocsag512FilterDepth", value);
-            }
-        }
-
-        public int Pocsag1200FilterDepth
-        {
-            get
-            {
-                return Utils.GetIntSetting("plugin.pocsag.Pocsag1200FilterDepth", 46);
-            }
-            set
-            {
-                Utils.SaveSetting("plugin.pocsag.Pocsag1200FilterDepth", value);
-            }
-        }
-
-        public int Pocsag2400FilterDepth
-        {
-            get
-            {
-                return Utils.GetIntSetting("plugin.pocsag.Pocsag2400FilterDepth", 23);
-            }
-            set
-            {
-                Utils.SaveSetting("plugin.pocsag.Pocsag2400FilterDepth", value);
+                Utils.SaveSetting("plugin.pocsag.SelectedMode", value);
             }
         }
     }

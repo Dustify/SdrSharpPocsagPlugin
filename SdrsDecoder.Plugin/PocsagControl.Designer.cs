@@ -32,17 +32,19 @@ namespace SdrsDecoder.Plugin
             components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             dataGridView1 = new System.Windows.Forms.DataGridView();
-            checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
-            checkBoxHideBad = new System.Windows.Forms.CheckBox();
-            buttonClear = new System.Windows.Forms.Button();
-            checkBoxMultiline = new System.Windows.Forms.CheckBox();
-            toolTip1 = new System.Windows.Forms.ToolTip(components);
             Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             Protocol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
             Errors = new System.Windows.Forms.DataGridViewTextBoxColumn();
             Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             Payload = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            checkBoxDeDuplicate = new System.Windows.Forms.CheckBox();
+            checkBoxHideBad = new System.Windows.Forms.CheckBox();
+            buttonClear = new System.Windows.Forms.Button();
+            checkBoxMultiline = new System.Windows.Forms.CheckBox();
+            toolTip1 = new System.Windows.Forms.ToolTip(components);
+            label1 = new System.Windows.Forms.Label();
+            modeSelector = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -61,51 +63,6 @@ namespace SdrsDecoder.Plugin
             dataGridView1.RowTemplate.Height = 25;
             dataGridView1.Size = new System.Drawing.Size(1418, 381);
             dataGridView1.TabIndex = 0;
-            // 
-            // checkBoxDeDuplicate
-            // 
-            checkBoxDeDuplicate.AutoSize = true;
-            checkBoxDeDuplicate.Location = new System.Drawing.Point(5, 5);
-            checkBoxDeDuplicate.Name = "checkBoxDeDuplicate";
-            checkBoxDeDuplicate.Size = new System.Drawing.Size(94, 19);
-            checkBoxDeDuplicate.TabIndex = 1;
-            checkBoxDeDuplicate.Text = "De-duplicate";
-            checkBoxDeDuplicate.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxHideBad
-            // 
-            checkBoxHideBad.AutoSize = true;
-            checkBoxHideBad.Location = new System.Drawing.Point(106, 5);
-            checkBoxHideBad.Name = "checkBoxHideBad";
-            checkBoxHideBad.Size = new System.Drawing.Size(121, 19);
-            checkBoxHideBad.TabIndex = 2;
-            checkBoxHideBad.Text = "Hide bad decodes";
-            checkBoxHideBad.UseVisualStyleBackColor = true;
-            // 
-            // buttonClear
-            // 
-            buttonClear.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            buttonClear.Location = new System.Drawing.Point(1337, 5);
-            buttonClear.Name = "buttonClear";
-            buttonClear.Size = new System.Drawing.Size(75, 23);
-            buttonClear.TabIndex = 3;
-            buttonClear.Text = "Clear";
-            toolTip1.SetToolTip(buttonClear, "Clear all entries from the table");
-            buttonClear.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxMultiline
-            // 
-            checkBoxMultiline.AutoSize = true;
-            checkBoxMultiline.Location = new System.Drawing.Point(234, 5);
-            checkBoxMultiline.Name = "checkBoxMultiline";
-            checkBoxMultiline.Size = new System.Drawing.Size(99, 19);
-            checkBoxMultiline.TabIndex = 4;
-            checkBoxMultiline.Text = "Wrap payload";
-            checkBoxMultiline.UseVisualStyleBackColor = true;
-            // 
-            // toolTip1
-            // 
-            toolTip1.AutomaticDelay = 0;
             // 
             // Timestamp
             // 
@@ -157,10 +114,74 @@ namespace SdrsDecoder.Plugin
             Payload.Name = "Payload";
             Payload.ReadOnly = true;
             // 
+            // checkBoxDeDuplicate
+            // 
+            checkBoxDeDuplicate.AutoSize = true;
+            checkBoxDeDuplicate.Location = new System.Drawing.Point(5, 5);
+            checkBoxDeDuplicate.Name = "checkBoxDeDuplicate";
+            checkBoxDeDuplicate.Size = new System.Drawing.Size(94, 19);
+            checkBoxDeDuplicate.TabIndex = 1;
+            checkBoxDeDuplicate.Text = "De-duplicate";
+            checkBoxDeDuplicate.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxHideBad
+            // 
+            checkBoxHideBad.AutoSize = true;
+            checkBoxHideBad.Location = new System.Drawing.Point(106, 5);
+            checkBoxHideBad.Name = "checkBoxHideBad";
+            checkBoxHideBad.Size = new System.Drawing.Size(121, 19);
+            checkBoxHideBad.TabIndex = 2;
+            checkBoxHideBad.Text = "Hide bad decodes";
+            checkBoxHideBad.UseVisualStyleBackColor = true;
+            // 
+            // buttonClear
+            // 
+            buttonClear.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            buttonClear.Location = new System.Drawing.Point(1337, 5);
+            buttonClear.Name = "buttonClear";
+            buttonClear.Size = new System.Drawing.Size(75, 23);
+            buttonClear.TabIndex = 3;
+            buttonClear.Text = "Clear";
+            toolTip1.SetToolTip(buttonClear, "Clear all entries from the table");
+            buttonClear.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxMultiline
+            // 
+            checkBoxMultiline.AutoSize = true;
+            checkBoxMultiline.Location = new System.Drawing.Point(234, 5);
+            checkBoxMultiline.Name = "checkBoxMultiline";
+            checkBoxMultiline.Size = new System.Drawing.Size(99, 19);
+            checkBoxMultiline.TabIndex = 4;
+            checkBoxMultiline.Text = "Wrap payload";
+            checkBoxMultiline.UseVisualStyleBackColor = true;
+            // 
+            // toolTip1
+            // 
+            toolTip1.AutomaticDelay = 0;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(343, 6);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(38, 15);
+            label1.TabIndex = 5;
+            label1.Text = "Mode";
+            // 
+            // modeSelector
+            // 
+            modeSelector.FormattingEnabled = true;
+            modeSelector.Location = new System.Drawing.Point(387, 3);
+            modeSelector.Name = "modeSelector";
+            modeSelector.Size = new System.Drawing.Size(196, 23);
+            modeSelector.TabIndex = 6;
+            // 
             // PocsagControl
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(modeSelector);
+            Controls.Add(label1);
             Controls.Add(checkBoxMultiline);
             Controls.Add(buttonClear);
             Controls.Add(checkBoxHideBad);
@@ -186,5 +207,7 @@ namespace SdrsDecoder.Plugin
         private System.Windows.Forms.DataGridViewTextBoxColumn Errors;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox modeSelector;
     }
 }

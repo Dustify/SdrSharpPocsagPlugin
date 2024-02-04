@@ -30,6 +30,11 @@
             }
         }
 
+        public void ChangeMode(string mode)
+        {
+            this.Manager.ChangeMode(mode);
+        }
+
         public void Process(float* buffer, int length)
         {
             try

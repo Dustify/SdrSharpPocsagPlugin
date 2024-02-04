@@ -56,6 +56,8 @@
                         this.MessageReceived(message);
                     });
 
+            this.processor.ChangeMode(this.Settings.SelectedMode);
+
             this.control.RegisterStreamHook(
                 this.processor,
                 SDRSharp.Radio.ProcessorType.DemodulatorOutput);
@@ -69,6 +71,13 @@
             this.checkBoxDeDuplicate.Checked = this.Settings.DeDuplicate;
             this.checkBoxHideBad.Checked = this.Settings.HideBadDecodes;
             this.checkBoxMultiline.Checked = this.Settings.MultilinePayload;
+
+            foreach (var item in Manager.ConfigSets.Select(x => x.Name))
+            {
+                this.modeSelector.Items.Add(item);
+            }
+
+            this.modeSelector.SelectedValue = this.Settings.SelectedMode;
 
             this.checkBoxDeDuplicate.Click +=
                 (object sender, EventArgs e) =>
@@ -94,6 +103,20 @@
                 {
                     this.bindingList.Clear();
                 };
+
+            // prevent typing in mode selector
+            this.modeSelector.KeyPress += (object sender, KeyPressEventArgs e) =>
+            {
+                e.Handled = true;
+            };
+
+            this.modeSelector.SelectedValueChanged += (object sender, EventArgs e) =>
+            {
+                var value = this.modeSelector.Text;
+
+                this.Settings.SelectedMode = value;
+                this.processor.ChangeMode(value);
+            };
 
             this.UpdateMultilineMode();
         }
