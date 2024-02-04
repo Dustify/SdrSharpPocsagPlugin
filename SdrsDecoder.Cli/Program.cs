@@ -15,9 +15,10 @@
         {
             try
             {
-                var source = "TNC_Test_Ver-1 track 1 AUDIO-2352.wav";
+                //var source = "TNC_Test_Ver-1 track 1 AUDIO-2352.wav";
+                //var source = "TNC_Test_Ver-1 track 2 AUDIO-2352.wav";
                 //var source = "aprs 3.wav";
-                //var source = "aprs4-n3.wav";
+                var source = "aprs4-n3.wav";
 
                 var baud = 1200;
 
@@ -122,7 +123,7 @@
                         if (!message.HasErrors)
                         {
                             successCount += 1;
-                            Console.WriteLine(message.Payload);
+                            Console.WriteLine(message.Address + ":" + message.Payload);
                         }
 
                         //Console.WriteLine(message.HasErrors);

@@ -2,29 +2,9 @@
 using SdrsDecoder.Support;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace SdrsDecoder
 {
-    // public struct Ax25Address
-    // {
-    //     public string Call;
-    //     public byte Ssid;
-    //     public byte RR;
-    //     public byte CRH;
-    // }
-
-    // public enum Ax25ControlType
-    // {
-    //     None,
-    //     IShort,
-    //     SShort,
-    //     UShort,
-    //     // ILong,
-    //     // SLong
-    // }
-
     public class Ax25FramePost
     {
         public static List<string> Dedupe = new List<string>();
@@ -156,39 +136,48 @@ namespace SdrsDecoder
 
             var rxFcs = (ushort)(bytes[^2] | (bytes[^1] << 8));
 
-            var message = "";
-
-            message += this.spaceMultiplier.ToString() + " ";
-
-            //message += "RX:" + Convert.ToString(rxFcs, 2).PadLeft(16, '0') + "\n";
-            //message += "CL:" + Convert.ToString(calcFcs, 2).PadLeft(16, '0') + "\n";
-
-            //message += calcFcs == rxFcs ? "Y-" : "N-";
-
-            for (var i = 0; i < bytes.Count - 2; i++)
-            {
-                var b = bytes[i];
-                //var value = ReverseBits(b);
-
-                //Console.Write((value).ToString("X").PadLeft(2, '0') + " ");
-
-                //message += (char)(value & 0x7f);
-                message += (char)b;
-            }
-            //Console.WriteLine();
-
             var messageObj = new Ax25Message();
-            messageObj.Payload = message;
+            messageObj.Address = "";
+            messageObj.Payload = "";
             messageObj.HasErrors = calcFcs != rxFcs;
             messageObj.ErrorText = messageObj.HasErrors ? "Yes" : "No";
 
-            //var indexString = calcFcs.ToString();
+            var to = "";
 
-            //if (!Dedupe.Contains(indexString))
-            //{
+            // TO:
+            for (var i = 0; i < 6; i++)
+            {
+                var b = (int)bytes[i];
+                b = b >> 1;
+
+                to += (char)b;
+            }
+
+            to = to.Trim();
+
+            var from = "";
+
+            // FROM:
+            for (var i = 7; i < 13; i++)
+            {
+                var b = (int)bytes[i];
+                b = b >> 1;
+
+                from += (char)b;
+            }
+
+            from = from.Trim();
+
+            messageObj.Address = $"{from}>{to}";
+
+            for (var i = 2; i < bytes.Count - 2; i++)
+            {
+                var b = bytes[i];
+
+                messageObj.Payload += (char)b;
+            }
+
             messageReceived(messageObj);
-            //    Dedupe.Add(indexString);
-            //}            
         }
     }
 }

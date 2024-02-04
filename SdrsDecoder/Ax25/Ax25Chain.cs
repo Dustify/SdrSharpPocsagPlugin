@@ -86,16 +86,18 @@ namespace SdrsDecoder.Ax25
                 {
                     var nrz_decode = nrzDecoder[x].Process(value);
 
-                    if (nrz_decode.IsFlag)
+                    var current_ax25Decoder = ax25Decoder[x];
+
+                    if (nrz_decode.IsFlag || current_ax25Decoder.Frame.Bits.Count > (10 * 1024 * 8))
                     {
-                        ax25Decoder[x].Flag();
+                        current_ax25Decoder.Flag();
                     }
 
                     var unstuffed = unstuffer[x].Process(nrz_decode.Value);
 
                     if (unstuffed.HasValue)
                     {
-                        ax25Decoder[x].Process(unstuffed.Value);
+                        current_ax25Decoder.Process(unstuffed.Value);
                     }
                 }
             }
