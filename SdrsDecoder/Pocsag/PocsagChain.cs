@@ -19,7 +19,7 @@ namespace SdrsDecoder.Pocsag
             var pll = new Pll(Rv.dsr, baud);
 
             interpolator = new Interpolator(Rv.i);
-            filter = new ChebyFilter(baud, 1f, Rv.isr);
+            filter = new ChebyFilter(baud * 1.2f, 1f, Rv.isr);
             decimator = new Decimator(Rv.d);
             demodulator = new Fsk2Demodulator(baud, Rv.dsr, pll, true);
             decoder = new PocsagDecoder(Convert.ToUInt32(baud), messageReceived);
