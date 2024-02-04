@@ -2,6 +2,7 @@
 using SdrsDecoder.Support;
 using System;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SdrsDecoder
 {
@@ -44,6 +45,17 @@ namespace SdrsDecoder
            0x6b46, 0x7acf, 0x4854, 0x59dd, 0x2d62, 0x3ceb, 0x0e70, 0x1ff9,
            0xf78f, 0xe606, 0xd49d, 0xc514, 0xb1ab, 0xa022, 0x92b9, 0x8330,
            0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78
+        };
+
+        static string[] aprs_prefixes = {
+            "AIR", "ALL", "AP", "BEACON", "CQ", "GPS", "DF",
+            "DGPS", "DRILL", "DX", "ID", "JAVA", "MAIL", "MICE",
+            "QST", "QTH", "RTCM", "SKY", "SPACE", "SPC", "SYM",
+            "TEL", "TEST", "TLM", "WX", "ZIP",
+
+            "APC", "APD", "APE", "API", "APIC", "APK",
+            "APM", "APP", "APR", "APRS", "APRSM", "APRSW",
+            "APS", "APW", "APX", "APY", "APZ"
         };
 
         public List<bool> Bits { get; } = new List<bool>();
@@ -142,60 +154,197 @@ namespace SdrsDecoder
             messageObj.HasErrors = calcFcs != rxFcs;
             messageObj.ErrorText = messageObj.HasErrors ? "Yes" : "No";
 
-            var lastAddressFound = false;
-            var addressCount = 0;
-
-            var calls = new List<string>();
-
-            while (!lastAddressFound && addressCount < 6)
+            try
             {
-                var start = addressCount * 7;
+                var lastAddressFound = false;
+                var addressCount = 0;
 
-                var call = "";
+                var calls = new List<string>();
 
-                for (var i = 0; i < 7; i++)
+                // use this later for aprs checking
+                var destCall = "";
+
+                while (!lastAddressFound && addressCount < 10)
                 {
-                    var b = (int)bytes[i + start];
+                    var start = addressCount * 7;
 
-                    if ((b & 1) == 1)
+                    var call = "";
+
+                    for (var i = 0; i < 7; i++)
                     {
-                        lastAddressFound = true;
+                        var b = (int)bytes[i + start];
+
+                        if ((b & 1) == 1)
+                        {
+                            lastAddressFound = true;
+                        }
+
+                        b = b >> 1;
+
+                        if (i < 6)
+                        {
+                            call += (char)b;
+                        }
+                        else
+                        {
+                            call = call.Trim();
+
+                            if (addressCount == 0)
+                            {
+                                destCall = call;
+                            }
+
+                            call += "-" + (b & 0b1111).ToString();
+                        }
                     }
 
-                    b = b >> 1;
+                    calls.Add(call);
 
-                    if (i < 6)
+                    addressCount++;
+                }
+
+                if (calls.Count >= 2)
+                {
+                    messageObj.Address = $"{calls[1]}>{calls[0]}";
+                }
+
+                for (var i = 2; i < calls.Count; i++)
+                {
+                    messageObj.Address += $",{calls[i]}";
+                }
+
+                var controlIndex = addressCount * 7;
+                var controlByte = (int)bytes[controlIndex];
+
+                var frameType = "Unknown";
+                var hasInfo = false;
+
+                if ((controlByte & 0b1) == 0b0)
+                {
+                    // information
+                    frameType = "I";
+                    hasInfo = true;
+                }
+                else
+                {
+                    var typeIndicator = controlByte & 0b11;
+
+                    if (typeIndicator == 0b01)
                     {
-                        call += (char)b;
+                        // supervisory
+                        frameType = "S-";
+
+                        var superBits = (controlByte & 0b1100) >> 0b11;
+
+                        switch (superBits)
+                        {
+                            case 0:
+                                frameType += "RR";
+                                break;
+                            case 1:
+                                frameType += "RNR";
+                                break;
+                            case 2:
+                                frameType += "REJ";
+                                break;
+                            case 3:
+                                frameType += "SREJ";
+                                break;
+                        }
                     }
-                    else
+
+                    if (typeIndicator == 0b11)
                     {
-                        call = call.Trim();
-                        call += "-" + (b & 0b1111).ToString();
+                        // unnumbered 
+                        frameType = "U-";
+
+                        var unnumBits1 = (controlByte & 0b11100000) >> 3;
+                        var unnumBits2 = (controlByte & 0b1100) >> 2;
+                        var unnumBits = unnumBits1 + unnumBits2;
+
+                        switch (unnumBits)
+                        {
+                            case 0b01111:
+                                frameType += "SABME";
+                                break;
+                            case 0b00111:
+                                frameType += "SABM";
+                                break;
+                            case 001000:
+                                frameType += "DISC";
+                                break;
+                            case 0b00011:
+                                frameType += "DM";
+                                break;
+                            case 0b01100:
+                                frameType += "UA";
+                                break;
+                            case 0b10001:
+                                frameType += "FRMR";
+                                break;
+                            case 0b00000:
+                                frameType += "UI";
+                                hasInfo = true;
+                                break;
+                            case 0b10111:
+                                frameType += "XID";
+                                hasInfo = true;
+                                break;
+                            case 0b11100:
+                                frameType += "TEST";
+                                hasInfo = true;
+                                break;
+                        }
                     }
                 }
 
-                calls.Add(call);
+                messageObj.OverrideType = frameType;
 
-                addressCount++;
+                var informationIndex = controlIndex + 1;
+
+                if (hasInfo)
+                {
+                    // not using this information (yet)
+                    //// process pid
+                    //var b = bytes[informationIndex];
+
+                    //// XID not implemented here (yet)
+                    //if (frameType != "XID")
+                    //{
+                    //    messageObj.Payload += Convert.ToString(b, 2).PadLeft(8, '0') + " ";
+                    //}
+
+                    informationIndex += 1;
+                }
+
+                // aprs check - do this another time
+                //var isAprs = false;
+
+                //foreach (var aprsPrefix in aprs_prefixes)
+                //{
+                //    if (destCall.StartsWith(aprsPrefix))
+                //    {
+                //        isAprs = true;
+                //        break;
+                //    }
+                //}
+
+                //if (isAprs)
+                //{
+                //    messageObj.OverrideType += " (APRS)";
+                //}
+
+                // dump rest of message
+                for (var i = informationIndex; i < bytes.Count - 2; i++)
+                {
+                    var b = bytes[i];
+
+                    messageObj.Payload += (char)b;
+                }
             }
-
-            if (calls.Count >= 2)
+            catch (Exception ex)
             {
-                messageObj.Address = $"{calls[1]}>{calls[0]}";
-            }
-
-            for (var i = 2; i < calls.Count; i++)
-            {
-                messageObj.Address += $",{calls[i]}";
-            }
-
-            // dump rest of message
-            for (var i = ((addressCount - 1) * 7); i < bytes.Count - 2; i++)
-            {
-                var b = bytes[i];
-
-                messageObj.Payload += (char)b;
+                messageObj.ErrorText += " (ET)";
             }
 
             messageReceived(messageObj);

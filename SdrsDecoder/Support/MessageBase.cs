@@ -32,10 +32,17 @@
 
         public MessageType Type { get; set; }
 
+        public string OverrideType { get; set; }
+
         public string TypeText
         {
             get
             {
+                if (OverrideType != null)
+                {
+                    return OverrideType;
+                }
+
                 switch (Type)
                 {
                     case MessageType.AlphaNumeric:
