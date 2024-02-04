@@ -26,17 +26,22 @@ namespace SdrsDecoder.Acars
 
         public List<bool> Bits = new List<bool>();
 
+        public void Reset()
+        {
+            this.Bits = new List<bool>();
+        }
+
         public void Flag()
         {
             if (this.Bits.Count < 40)
             {
-                this.Bits = new List<bool>();
+                this.Reset();
                 return;
             }
 
             if (this.Bits.Count % 8 != 0)
             {
-                this.Bits = new List<bool>();
+                this.Reset();
                 return;
             }
 
@@ -67,8 +72,6 @@ namespace SdrsDecoder.Acars
                     current_byte = 0;
                 }
             }
-
-
 
             var payload = "";
 
@@ -180,7 +183,7 @@ namespace SdrsDecoder.Acars
 
             this.messageReceived(message);
 
-            this.Bits = new List<bool>();
+            this.Reset();
         }
 
         int currentValue;
