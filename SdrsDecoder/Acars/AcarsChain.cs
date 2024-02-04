@@ -5,6 +5,8 @@ namespace SdrsDecoder.Acars
 {
     public class AcarsChain : ChainBase
     {
+        // https://core.ac.uk/reader/8981460 <- heavily referenced for this implementation
+
         public ResampleValues Rv;
         private Interpolator interpolator;
         private ChebyFilter filter;
