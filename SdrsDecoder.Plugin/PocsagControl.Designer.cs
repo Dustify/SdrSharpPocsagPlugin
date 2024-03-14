@@ -45,6 +45,7 @@ namespace SdrsDecoder.Plugin
             toolTip1 = new System.Windows.Forms.ToolTip(components);
             label1 = new System.Windows.Forms.Label();
             modeSelector = new System.Windows.Forms.ComboBox();
+            checkBoxLogging = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -162,7 +163,7 @@ namespace SdrsDecoder.Plugin
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(343, 6);
+            label1.Location = new System.Drawing.Point(415, 6);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(38, 15);
             label1.TabIndex = 5;
@@ -171,15 +172,26 @@ namespace SdrsDecoder.Plugin
             // modeSelector
             // 
             modeSelector.FormattingEnabled = true;
-            modeSelector.Location = new System.Drawing.Point(387, 3);
+            modeSelector.Location = new System.Drawing.Point(459, 3);
             modeSelector.Name = "modeSelector";
             modeSelector.Size = new System.Drawing.Size(196, 23);
             modeSelector.TabIndex = 6;
+            // 
+            // checkBoxLogging
+            // 
+            checkBoxLogging.AutoSize = true;
+            checkBoxLogging.Location = new System.Drawing.Point(339, 5);
+            checkBoxLogging.Name = "checkBoxLogging";
+            checkBoxLogging.Size = new System.Drawing.Size(70, 19);
+            checkBoxLogging.TabIndex = 7;
+            checkBoxLogging.Text = "Logging";
+            checkBoxLogging.UseVisualStyleBackColor = true;
             // 
             // PocsagControl
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(checkBoxLogging);
             Controls.Add(modeSelector);
             Controls.Add(label1);
             Controls.Add(checkBoxMultiline);
@@ -209,5 +221,6 @@ namespace SdrsDecoder.Plugin
         private System.Windows.Forms.DataGridViewTextBoxColumn Payload;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox modeSelector;
+        private System.Windows.Forms.CheckBox checkBoxLogging;
     }
 }

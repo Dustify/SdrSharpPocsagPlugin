@@ -6,6 +6,7 @@
     using System.Windows.Forms;
     using System.Linq;
     using SdrsDecoder.Support;
+    using System.IO;
 
     public partial class PocsagControl : UserControl
     {
@@ -71,13 +72,14 @@
             this.checkBoxDeDuplicate.Checked = this.Settings.DeDuplicate;
             this.checkBoxHideBad.Checked = this.Settings.HideBadDecodes;
             this.checkBoxMultiline.Checked = this.Settings.MultilinePayload;
+            this.checkBoxLogging.Checked = this.Settings.Logging;
 
             foreach (var item in Manager.ConfigSets.Select(x => x.Name))
             {
                 this.modeSelector.Items.Add(item);
             }
 
-            this.modeSelector.SelectedValue = this.Settings.SelectedMode;
+            this.modeSelector.SelectedIndex = this.modeSelector.FindStringExact(this.Settings.SelectedMode);
 
             this.checkBoxDeDuplicate.Click +=
                 (object sender, EventArgs e) =>
@@ -97,6 +99,12 @@
                 {
                     this.UpdateMultilineMode();
                 };
+
+            this.checkBoxLogging.Click +=
+              (object sender, EventArgs e) =>
+              {
+                  this.Settings.Logging = this.checkBoxLogging.Checked;
+              };
 
             this.buttonClear.Click +=
                 (object sender, EventArgs e) =>
@@ -119,6 +127,60 @@
             };
 
             this.UpdateMultilineMode();
+        }
+
+        private static object LogLock = new object();
+
+        private string CsvifyText(string source)
+        {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                return "\"\"";
+            }
+
+            var result = source;
+
+            result = result.Replace("\r\n", " ");
+            result = result.Replace("\n", " ");
+            result = result.Replace("\r", " ");
+
+            result = result.Replace("\"", "\"\"");
+            result = $"\"{result}\"";
+
+            return result;
+        }
+
+        private void LogMessage(MessageBase message)
+        {
+            var directory = "sdrs-log";
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            var filename = DateTime.Now.ToString("yyyy-MM-dd") + ".csv";
+
+            var path = $"{directory}/{filename}";
+
+            lock (LogLock)
+            {
+                if (!File.Exists(path))
+                {
+                    File.WriteAllText(path, "timestamp,protocol,address,errors,type,payload\n");
+                }
+
+                var line = "";
+
+                line += $"{CsvifyText(message.TimestampText)},";
+                line += $"{CsvifyText(message.Protocol)},";
+                line += $"{CsvifyText(message.Address)},";
+                line += $"{CsvifyText(message.ErrorText)},";
+                line += $"{CsvifyText(message.TypeText)},";
+                line += $"{CsvifyText(message.Payload)}";
+
+                File.AppendAllLines(path, new string[] { line });
+            }
         }
 
         private void MessageReceived(MessageBase message)
@@ -157,6 +219,11 @@
                             if (lastVisible == lastIndex)
                             {
                                 this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
+                            }
+
+                            if (this.Settings.Logging)
+                            {
+                                this.LogMessage(message);
                             }
                         }),
                     new object[] { message });

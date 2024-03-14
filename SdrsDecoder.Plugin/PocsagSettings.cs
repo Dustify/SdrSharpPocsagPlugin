@@ -50,11 +50,23 @@
         {
             get
             {
-                return Utils.GetStringSetting("plugin.pocsag.SelectedMode", "POCSAG");
+                return Utils.GetStringSetting("plugin.pocsag.SelectedMode", "POCSAG (512, 1200, 2400)");
             }
             set
             {
                 Utils.SaveSetting("plugin.pocsag.SelectedMode", value);
+            }
+        }
+
+        public bool Logging
+        {
+            get
+            {
+                return Utils.GetBooleanSetting("plugin.pocsag.Logging", false);
+            }
+            set
+            {
+                Utils.SaveSetting("plugin.pocsag.Logging", value);
             }
         }
     }
