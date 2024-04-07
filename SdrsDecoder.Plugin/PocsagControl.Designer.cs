@@ -30,7 +30,7 @@ namespace SdrsDecoder.Plugin
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             dataGridView1 = new System.Windows.Forms.DataGridView();
             Timestamp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             Protocol = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,6 +46,8 @@ namespace SdrsDecoder.Plugin
             label1 = new System.Windows.Forms.Label();
             modeSelector = new System.Windows.Forms.ComboBox();
             checkBoxLogging = new System.Windows.Forms.CheckBox();
+            label2 = new System.Windows.Forms.Label();
+            textBoxFilter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -84,8 +86,8 @@ namespace SdrsDecoder.Plugin
             // Address
             // 
             Address.DataPropertyName = "Address";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            Address.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            Address.DefaultCellStyle = dataGridViewCellStyle2;
             Address.HeaderText = "Address";
             Address.Name = "Address";
             Address.ReadOnly = true;
@@ -138,7 +140,7 @@ namespace SdrsDecoder.Plugin
             // buttonClear
             // 
             buttonClear.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            buttonClear.Location = new System.Drawing.Point(1337, 5);
+            buttonClear.Location = new System.Drawing.Point(1337, 3);
             buttonClear.Name = "buttonClear";
             buttonClear.Size = new System.Drawing.Size(75, 23);
             buttonClear.TabIndex = 3;
@@ -187,10 +189,29 @@ namespace SdrsDecoder.Plugin
             checkBoxLogging.Text = "Logging";
             checkBoxLogging.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(661, 6);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(33, 15);
+            label2.TabIndex = 8;
+            label2.Text = "Filter";
+            // 
+            // textBoxFilter
+            // 
+            textBoxFilter.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBoxFilter.Location = new System.Drawing.Point(700, 3);
+            textBoxFilter.Name = "textBoxFilter";
+            textBoxFilter.Size = new System.Drawing.Size(631, 23);
+            textBoxFilter.TabIndex = 9;
+            // 
             // PocsagControl
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(textBoxFilter);
+            Controls.Add(label2);
             Controls.Add(checkBoxLogging);
             Controls.Add(modeSelector);
             Controls.Add(label1);
@@ -222,5 +243,7 @@ namespace SdrsDecoder.Plugin
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox modeSelector;
         private System.Windows.Forms.CheckBox checkBoxLogging;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBoxFilter;
     }
 }

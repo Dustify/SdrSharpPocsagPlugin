@@ -1,11 +1,6 @@
 ﻿namespace SdrsDecoder.Plugin
 {
     using SDRSharp.Radio;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
 
     public class PocsagSettings
@@ -67,6 +62,18 @@
             set
             {
                 Utils.SaveSetting("plugin.pocsag.Logging", value);
+            }
+        }
+
+        public string Filter
+        {
+            get
+            {
+                return Utils.GetStringSetting("plugin.pocsag.Filter", "");
+            }
+            set
+            {
+                Utils.SaveSetting("plugin.pocsag.Filter", value);
             }
         }
     }

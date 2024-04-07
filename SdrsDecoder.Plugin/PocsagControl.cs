@@ -81,6 +81,8 @@
 
             this.modeSelector.SelectedIndex = this.modeSelector.FindStringExact(this.Settings.SelectedMode);
 
+            this.textBoxFilter.Text = this.Settings.Filter;
+
             this.checkBoxDeDuplicate.Click +=
                 (object sender, EventArgs e) =>
                 {
@@ -126,6 +128,11 @@
                 this.processor.ChangeMode(value);
             };
 
+            this.textBoxFilter.TextChanged += (object sender, EventArgs e) =>
+            {
+                this.Settings.Filter = this.textBoxFilter.Text;
+            };
+
             this.UpdateMultilineMode();
         }
 
@@ -150,7 +157,7 @@
             return result;
         }
 
-        private void LogMessage(MessageBase message)
+        private void LogMessage(MessageBase message, string fileNameSuffix = "")
         {
             var directory = "sdrs-log";
 
@@ -159,7 +166,7 @@
                 Directory.CreateDirectory(directory);
             }
 
-            var filename = DateTime.Now.ToString("yyyy-MM-dd") + ".csv";
+            var filename = DateTime.Now.ToString("yyyy-MM-dd") + fileNameSuffix + ".csv";
 
             var path = $"{directory}/{filename}";
 
@@ -204,26 +211,57 @@
                                 return;
                             }
 
+                            var filter = this.Settings.Filter;
+                            var filterOn = !string.IsNullOrWhiteSpace(filter);
+                            var filterMatched = false;
+
+                            if (filterOn)
+                            {
+                                var filterElements = filter.Split(",");
+
+                                foreach (var filterElement in filterElements)
+                                {
+                                    if (message.Address.Contains(filterElement, StringComparison.InvariantCultureIgnoreCase) || message.Payload.Contains(filterElement, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        filterMatched = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            var messageValidForFilter = filterOn && filterMatched;
+
                             int firstDisplayed = this.dataGridView1.FirstDisplayedScrollingRowIndex;
                             int displayed = this.dataGridView1.DisplayedRowCount(true);
                             int lastVisible = (firstDisplayed + displayed) - 1;
                             int lastIndex = this.dataGridView1.RowCount - 1;
 
-                            this.bindingList.Add(message);
-
-                            while (this.bindingList.Count > 1000)
+                            if (messageValidForFilter || !filterOn)
                             {
-                                this.bindingList.RemoveAt(0);
+                                this.bindingList.Add(message);
+
+                                while (this.bindingList.Count > 1000)
+                                {
+                                    this.bindingList.RemoveAt(0);
+                                }
+
+                                if (lastVisible == lastIndex)
+                                {
+                                    this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
+                                }
                             }
 
-                            if (lastVisible == lastIndex)
-                            {
-                                this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
-                            }
-
+                            
                             if (this.Settings.Logging)
                             {
+                                // log everything to main log
                                 this.LogMessage(message);
+
+                                // log filtered stuff to filtered log
+                                if (messageValidForFilter)
+                                {
+                                    this.LogMessage(message, "-filtered");
+                                }
                             }
                         }),
                     new object[] { message });
