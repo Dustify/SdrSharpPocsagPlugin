@@ -221,7 +221,13 @@
 
                                 foreach (var filterElement in filterElements)
                                 {
-                                    if (message.Address.Contains(filterElement, StringComparison.InvariantCultureIgnoreCase) || message.Payload.Contains(filterElement, StringComparison.InvariantCultureIgnoreCase))
+                                    if (!string.IsNullOrWhiteSpace(message.Address) && message.Address.Contains(filterElement, StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        filterMatched = true;
+                                        break;
+                                    }
+
+                                    if (!string.IsNullOrWhiteSpace(message.Payload) && message.Payload.Contains(filterElement, StringComparison.InvariantCultureIgnoreCase))
                                     {
                                         filterMatched = true;
                                         break;
@@ -250,7 +256,6 @@
                                     this.dataGridView1.FirstDisplayedScrollingRowIndex = firstDisplayed + 1;
                                 }
                             }
-
                             
                             if (this.Settings.Logging)
                             {
