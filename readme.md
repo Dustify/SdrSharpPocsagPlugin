@@ -1,3 +1,12 @@
+# NOTICE
+
+Please note that this repo is no-longer maintained and the documentation below is out of date (improvements / features have been added since it was written).
+
+Please feel free to fork, modify etc. The repo has been GPL'd.
+
+Thanks - aj
+
+
 # Screenshot
 
 ![POCSAG decoder](https://i.imgur.com/WJaRTUd.png)
